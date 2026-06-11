@@ -1,11 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome</title>
-</head>
-<body>
+<x-layout>
+  <x-slot name="header">
+    <img class=" max-w-[360px] md:max-w-full md:w-full max-h-[340px] md:max-h-[240px] object-cover object-[center_80%]" src="{{ asset('images/homepage-image.jpg') }}" alt="Samen Shoppen">
+  </x-slot>
+    <h1 class="text-2xl font-bold text-red-600 font-serif">Samen Shoppen</h1>
+    <p class="text-indigo-900 font-serif mt-3">
+        Heb je geen vervoer, heb je geen tijd of wil je liever niet alleen winkelen?
+    </p>
+
+    <h2 class="text-xl text-red-600 font-bold font-serif mt-6">Wat biedt samen shoppen?</h2>
     
-</body>
-</html>
+    <ul class="text-indigo-900 font-serif mt-2">
+        <li class="list-disc list-inside">Meerijden met andere shoppers</li>
+        <li class="list-disc list-inside">Gedeelde kosten bij winkelbezoek</li>
+        <li class="list-disc list-inside">Boodschappen laten halen</li>
+        <li class="list-disc list-inside">Samen winkelen</li>
+    </ul> 
+
+    <h2 class="text-xl text-red-600 font-bold font-serif mt-6">De filosofie van samen shoppen?</h2>
+    <p class="text-indigo-900 font-serif mt-3">
+        Samen duurt het langst en gedeelde kosten zijn halve kosten
+    </p>
+
+</x-layout>
