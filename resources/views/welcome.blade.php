@@ -1,6 +1,6 @@
 <x-layout>
   <x-slot name="header">
-    <img class="w-full" src="{{ asset('images/homepage-image.jpg') }}" alt="Samen Shoppen">
+    <img class=" max-w-[360px] md:max-w-full md:w-full max-h-[340px] md:max-h-[240px] object-cover object-[center_80%]" src="{{ asset('images/homepage-image.jpg') }}" alt="Samen Shoppen">
   </x-slot>
     <h1 class="text-2xl font-bold text-red-600 font-serif">Samen Shoppen</h1>
     <p class="text-indigo-900 font-serif mt-3">
