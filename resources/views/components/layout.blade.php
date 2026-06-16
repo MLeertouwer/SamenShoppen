@@ -12,7 +12,7 @@
         {{ $header }}
     </header>
 
-    <main class="p-4 flex-grow">
+    <main class="p-4 pb-32 flex-grow">
         {{ $slot }}
     </main>
 
