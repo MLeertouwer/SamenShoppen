@@ -22,7 +22,7 @@ class User extends Authenticatable implements CanResetPassword
      */
     protected $fillable = [
         'name',
-        'adress',
+        'address',
         'email',
         'phone',
         'password',
@@ -49,5 +49,10 @@ class User extends Authenticatable implements CanResetPassword
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function membership()
+    {
+        return $this->hasOne(Membership::class);
     }
 }
