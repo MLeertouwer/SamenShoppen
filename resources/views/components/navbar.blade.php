@@ -1,4 +1,4 @@
-<nav class="w-full mt-auto flex justify-around items-center border-t-2 border-indigo-900 px-2 py-3 bg-white h-28">
+<nav class="fixed bottom-0 left-0 right-0 flex justify-around items-center border-t-2 border-indigo-900 px-2 py-3 bg-white h-28 z-50">
     
     <a href="{{ route('home') }}" 
        class="flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200 w-20 h-20
@@ -17,7 +17,7 @@
         <span class="font-serif font-bold text-xs tracking-wide">home</span>
     </a>
 
-    <a href="{{ route('kalender') }}" 
+    {{-- <a href="{{ route('kalender') }}" 
        class="flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200 w-20 h-20
               {{ request()->routeIs('kalender') ? 'text-red-600 bg-red-50 font-bold' : 'text-indigo-900' }}">
         
@@ -32,7 +32,7 @@
             </svg>
         @endif
         <span class="font-serif font-bold text-xs tracking-wide">kalender</span>
-    </a>
+    </a> --}}
 
     <a href="{{ route('lijst') }}" 
        class="flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200 w-20 h-20
