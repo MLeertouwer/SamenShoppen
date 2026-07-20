@@ -1,6 +1,6 @@
 <x-layout>
   <x-slot name="header">
-    <img class=" max-w-[360px] md:max-w-full md:w-full max-h-[340px] md:max-h-[240px] object-cover object-[center_80%]" src="{{ asset('images/homepage-image.jpg') }}" alt="Samen Shoppen">
+    <img class=" max-w md:max-w-full md:w-full max-h-[340px] md:max-h-[240px] object-cover object-[center_80%]" src="{{ asset('images/homepage-image.jpg') }}" alt="Samen Shoppen">
   </x-slot>
     <h1 class="text-2xl font-bold text-red-600 font-serif">Samen Shoppen</h1>
     <p class="text-indigo-900 font-serif mt-3">
@@ -17,8 +17,15 @@
     </ul> 
 
     <h2 class="text-xl text-red-600 font-bold font-serif mt-6">De filosofie van samen shoppen?</h2>
-    <p class="text-indigo-900 font-serif mt-3">
+    <p class="text-indigo-900 font-serif mt-3 mb-6">
         Samen duurt het langst en gedeelde kosten zijn halve kosten
     </p>
+
+    <h2 class="text-xl text-red-600 font-bold font-serif mt-6 mb-6">Heb je al een account?</h2>
+
+
+    <btn class="bg-red-600 text-white font-bold py-2 px-4 rounded mt-6 hover:bg-red-700">
+        <a href="{{ route('login') }}">Inloggen</a>
+    </btn>  
 
 </x-layout>
