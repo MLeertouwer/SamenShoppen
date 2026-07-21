@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
-use Spatie\Permission\Traits\HasRoles;
-
+use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements CanResetPassword
 {
-
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles;
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -26,6 +25,7 @@ class User extends Authenticatable implements CanResetPassword
         'email',
         'phone',
         'password',
+        'status',
     ];
 
     /**
