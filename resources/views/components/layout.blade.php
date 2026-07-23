@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="nl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Samen Shoppen</title>
+    <link rel="stylesheet" href="{{ asset('style.css') }}">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="flex flex-col min-h-screen">
 
     <header class="w-full">
@@ -19,4 +22,5 @@
     <x-navbar />
 
 </body>
+
 </html>

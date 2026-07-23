@@ -14,14 +14,14 @@
                 </g>
             </svg>
         @endif
-        <span class="font-serif font-bold text-xs tracking-wide">home</span>
+        <span class="font-serif font-bold text-xs tracking-wide">Home</span>
     </a>
 
-    {{-- <a href="{{ route('kalender') }}" 
+    <a href="{{ route('ritten.index') }}" 
        class="flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200 w-20 h-20
-              {{ request()->routeIs('kalender') ? 'text-red-600 bg-red-50 font-bold' : 'text-indigo-900' }}">
+              {{ request()->routeIs('ritten.index') ? 'text-red-600 bg-red-50 font-bold' : 'text-indigo-900' }}">
         
-        @if(request()->routeIs('kalender'))
+        @if(request()->routeIs('ritten.index'))
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 256 256" xml:space="preserve" class="w-10 h-10 mb-1" fill="currentColor">
                 <g style="stroke: none; stroke-width: 0; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
                     <path d="M 74.396 66.93 h -47.12 c -3.491 0 -5.549 -2.665 -5.777 -5.299 c -0.178 -2.057 0.741 -4.326 2.792 -5.506 L 16.745 22.34 c -0.132 -0.592 0.012 -1.213 0.392 -1.687 c 0.379 -0.474 0.954 -0.75 1.561 -0.75 H 88 c 0.647 0 1.256 0.314 1.631 0.842 c 0.375 0.528 0.471 1.206 0.258 1.817 l -7.983 22.876 c -0.991 2.838 -3.446 4.921 -6.406 5.438 l -48.522 8.48 c -0.006 0.001 -0.012 0.002 -0.019 0.003 c -1.499 0.267 -1.507 1.541 -1.473 1.926 c 0.033 0.386 0.261 1.644 1.792 1.644 h 47.12 c 1.104 0 2 0.896 2 2 S 75.501 66.93 74.396 66.93 z M 21.193 23.904 l 6.966 31.186 l 46.652 -8.152 c 1.533 -0.268 2.805 -1.347 3.318 -2.817 l 7.055 -20.216 H 21.193 z" style="fill: currentColor;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round"/>
@@ -31,8 +31,8 @@
                 </g>
             </svg>
         @endif
-        <span class="font-serif font-bold text-xs tracking-wide">kalender</span>
-    </a> --}}
+        <span class="font-serif font-bold text-xs tracking-wide">Ritten</span>
+    </a>
 
     <a href="{{ route('lijst') }}" 
        class="flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200 w-20 h-20
@@ -48,7 +48,7 @@
                 </g>
             </svg>
         @endif
-        <span class="font-serif font-bold text-xs tracking-wide">lijst</span>
+        <span class="font-serif font-bold text-xs tracking-wide">Lijst</span>
     </a>
 
     <a href="{{ route('contact') }}" 
@@ -65,7 +65,7 @@
                 </g>
             </svg>
         @endif
-        <span class="font-serif font-bold text-xs tracking-wide">contact</span>
+        <span class="font-serif font-bold text-xs tracking-wide">Contact</span>
     </a>
 
     <a href="{{ route('requestform') }}" 

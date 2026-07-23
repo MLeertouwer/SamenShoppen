@@ -9,11 +9,15 @@ class Ride extends Model
     protected $fillable = [
         'driver_id',
         'destination_store',
+        'destination_longitude',
+        'destination_latitude',
+        'destination_address',
         'departure_time',
         'max_passengers',
         'status',
         'departure_longitude',
         'departure_latitude',
+        'departure_address',
     ];
 
     /**
@@ -22,6 +26,14 @@ class Ride extends Model
     public function driver()
     {
         return $this->belongsTo(Membership::class, 'driver_id');
+    }
+
+    /**
+     * De relatie: een rit kan meerdere passagiers hebben, en een passagier kan meerijden met meerdere ritten.
+     */
+    public function passengers()
+    {
+        return $this->belongsToMany(Membership::class, 'ride_passenger');
     }
 
     /**
