@@ -59,26 +59,10 @@
                         <div id="departure-autocomplete-container"></div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-400 mb-1">Gevonden Lengtegraad</label>
-                            <input type="text" name="departure_longitude" id="departure_longitude"
-                                value="{{ old('departure_longitude') }}"
-                                class="w-full p-2 border bg-gray-100 text-gray-500 text-xs outline-none" readonly required>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-400 mb-1">Gevonden Breedtegraad</label>
-                            <input type="text" name="departure_latitude" id="departure_latitude"
-                                value="{{ old('departure_latitude') }}"
-                                class="w-full p-2 border bg-gray-100 text-gray-500 text-xs outline-none" readonly required>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-400 mb-1">Gevonden adres</label>
-                            <input type="text" name="departure_address" id="departure_address"
-                                value="{{ old('departure_address') }}"
-                                class="w-full p-2 border bg-gray-100 text-gray-500 text-xs outline-none" readonly required>
-                        </div>
-                    </div>
+                    <!-- Verborgen velden die via JS worden gevuld -->
+                    <input type="hidden" name="departure_latitude" id="departure_latitude">
+                    <input type="hidden" name="departure_longitude" id="departure_longitude">
+                    <input type="hidden" name="departure_address" id="departure_address">
                 </div>
 
                 <div class="pt-4 flex justify-start">
