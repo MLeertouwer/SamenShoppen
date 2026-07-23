@@ -13,13 +13,20 @@ return new class extends Migration
     {
         Schema::create('rides', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('driver_id')->constrained('users')->cascadeOnDelete();
+            // LET OP: DEZE TERUGZETTEN ALS INLOGSYSTEEM BESCHIKBAAR IS
+            // $table->foreignId('driver_id')->constrained('memberships')->cascadeOnDelete();
+
+            $table->integer('driver_id');
 
             // Mandatory columns
             $table->string('destination_store');
             $table->timestamp('departure_time');
             $table->integer('max_passengers');
-            $table->string('departure_place');
+
+            // Seperate columns for departure_place for both coördinates
+            $table->decimal('departure_longitude', 10, 7);
+            $table->decimal('departure_latitude', 10, 7);
+
 
             // Optional column (O)
             $table->string('status')->nullable();
