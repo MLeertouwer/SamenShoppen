@@ -2,11 +2,8 @@
 
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RequestController;
-use App\Http\Controllers\KalenderController;
 use App\Http\Controllers\RideController;
-
 use Illuminate\Support\Facades\Route;
-
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,9 +13,9 @@ Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
 
-Route::get('/lijst', function () {
-    return view('lijst');
-})->name('lijst');
+Route::get('/profiel', function () {
+    return view('profiel');
+})->name('profiel')->middleware('auth');
 
 Route::post('/aanmelden', [RequestController::class, 'store'])->name('form.submit');
 
@@ -43,6 +40,8 @@ Route::get('/ritten/melden', [RideController::class, 'create'])->name('ritten.cr
 Route::get('/ritten/{id}', [RideController::class, 'show'])->name('ritten.show');
 Route::post('/ritten', [RideController::class, 'store'])->name('ritten.store');
 Route::post('/ritten/joinRide/{id}', [RideController::class, 'joinRide'])->name('ritten.join');
+
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // De overzichtspagina waar je naartoe wordt gestuurd na het succesvol aanmelden
 // Route::get('/ritten', function () {
