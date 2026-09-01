@@ -145,7 +145,7 @@
                 <span>Passagiers ({{ $ride->passengers->count() }})</span>
             </h2>
             <!-- Passagierslijst -->
-            <div class="mt-3 ml-7 space-y-2">
+            <div class="mt-3 space-y-2">
                 @if($ride->passengers->isEmpty())
                     <p class="text-xs text-gray-400 italic">Nog geen passagiers aangemeld.</p>
                 @else
@@ -156,6 +156,62 @@
                                     {{ $passenger->user->name }}
                                 </p>
                             </div>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+
+            <div class="w-100 border-t border-gray-100 my-5"></div>
+
+            <h2 class="text-sm font-bold text-gray-900 flex items-center space-x-2 mb-4">
+                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                {{-- Counter voor het aantal verzoeken --}}
+                <span>Verzoeken ({{ $ride->passengers->where('pivot.status', 'pending')->count() }})</span>
+            </h2>
+            <div class="mt-3 space-y-2">
+                @if($ride->passengers->where('pivot.status', 'pending')->isEmpty())
+                    <p class="text-xs text-gray-400 italic">Nog geen verzoeken.</p>
+                @else
+                    @foreach($ride->passengers->where('pivot.status', 'pending') as $verzoek)
+                        {{-- Op mobiel onder elkaar (flex-col), vanaf 'sm' schermen naast elkaar (sm:flex-row) --}}
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-blue-50/40 rounded-xl border border-blue-50/60">
+                            
+                            {{-- Links: Naam van de passagier --}}
+                            <div class="min-w-0">
+                                <p class="text-sm font-bold text-gray-800 truncate py-3">
+                                    {{ $verzoek->user->name }}
+                                </p>
+                            </div>
+
+                            {{-- Rechts/Onder: Knoppen (op mobiel elk 50% breed via flex-1) --}}
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <!-- Goedkeuren -->
+                                <form action="{{ route('rides.passengers.update', [$ride->id, $verzoek->id]) }}" method="POST" class="flex-1 sm:flex-none">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status" value="{{ \App\Enums\PassengerStatus::APPROVED->value }}">
+                                    <button type="submit" title="Goedkeuren" class="w-full flex justify-center items-center p-2 text-green-600 bg-green-50 border-2 border-green-200 rounded-xl hover:bg-green-100 transition shadow-sm">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+
+                                <!-- Afwijzen -->
+                                <form action="{{ route('rides.passengers.update', [$ride->id, $verzoek->id]) }}" method="POST" class="flex-1 sm:flex-none">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status" value="{{ \App\Enums\PassengerStatus::REJECTED->value }}">
+                                    <button type="submit" title="Afwijzen" class="w-full flex justify-center items-center p-2 text-red-600 bg-red-50 border-2 border-red-200 rounded-xl hover:bg-red-100 transition shadow-sm">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+
                         </div>
                     @endforeach
                 @endif

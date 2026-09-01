@@ -8,10 +8,10 @@ class Membership extends Model
 {
 
     protected $fillable = [
-        'user_id',           // Cruciaal: de koppeling naar de Users tabel!
-        'status',            // Verplicht (*)
-        'approved_by',       // Verplicht (*)
-        'paid_contribution', // Optioneel (O), maar handig als dit via een formulier/vinkje komt
+        'user_id',
+        'status',
+        'approved_by',
+        'paid_contribution',
     ];
 
     /**

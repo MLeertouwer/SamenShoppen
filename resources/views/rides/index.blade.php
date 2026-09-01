@@ -126,17 +126,37 @@
                                         </div>
 
                                         <!-- Plekken over badge -->
-                                        <span class="bg-black text-white text-[11px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0">
-                                            @php
-                                                $plekkenOver = $ride->max_passengers - $ride->passengers->count();
-                                            @endphp
+                                        @php
+                                        $plekkenOver = $ride->max_passengers - $ride->passengers->count();
+                                        $isPast = \Carbon\Carbon::parse($ride->departure_time)->isPast();
+                                    @endphp
+
+                                    <div class="flex flex-row items-end gap-1.5 flex-shrink-0">
+
+                                        <!-- Status badge -->
+                                        @if($isPast)
+                                            <!-- 3. Rit is geweest -->
+                                            <span class="bg-gray-100 text-gray-600 border border-gray-300 text-[11px] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap">
+                                                Afgelopen
+                                            </span>
+                                        @elseif($plekkenOver <= 0)
+                                            <!-- 2. Geen plek meer -->
+                                            <span class="bg-red-50 text-red-600 border border-red-200 text-[11px] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap">
+                                                Volgeboekt
+                                            </span>
+                                        @else
+                                            <!-- 1. Nog plek open -->
+                                            <span class="bg-emerald-50 text-emerald-600 border border-emerald-200 text-[11px] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap">
+                                                Open
+                                            </span>
+                                        @endif
+
+                                        <!-- Plekken over badge -->
+                                        <span class="bg-black text-white text-[11px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap">
                                             {{ $plekkenOver }} {{ $plekkenOver == 1 ? 'plek' : 'plekken' }} over
                                         </span>
                                     </div>
-
-                                    
-                                        
-                                    
+                                    </div>
 
                                     <!-- Details Rij -->
                                     <div class="flex flex-col flex-wrap gap-2 text-xs font-semibold text-gray-500 ml-7 pt-3 border-t border-gray-50">
@@ -163,11 +183,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- Status -->
-                                    <p class="text-xs italic text-gray-500 ml-7 mt-3">
-                                        Status: {{ $ride->status == 'active' ? 'Actief' : ucfirst($ride->status) }}
-                                    </p>
 
                                 </a>
                             @endforeach

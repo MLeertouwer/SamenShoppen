@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PassengerStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Membership;
 use App\Models\Ride;
+use Illuminate\Validation\Rule;
 
 use Carbon\Carbon;
 
@@ -41,7 +43,7 @@ class RideController extends Controller
     public function show($id)
     {
         // Zoek de rit op basis van het ID
-        $ride = Ride::findOrFail($id);
+        $ride = Ride::with(['passengers.user'])->findOrFail($id);
 
         // Stuur de rit door naar de view 'rides.show'
         return view('rides.show', compact('ride'));
@@ -115,7 +117,21 @@ class RideController extends Controller
         }
 
         // 3. Als beide checks goed zijn, melden we de passagier aan 🎉
-        $ride->passengers()->attach($membership->id);
-        return redirect()->back()->with('success', 'Je bent succesvol aangemeld voor deze rit!');
+        $ride->passengers()->attach($membership->id, [
+            'status' => PassengerStatus::PENDING->value,
+        ]);
+
+        return redirect()->back()->with('success', 'Je verzoek om mee te rijden is verzonden!');
+    }
+
+    public function updatePassengerStatus(Request $request)
+    {
+        // Stap 1: Valideer de data
+        $request->validate([
+            'status' => ['required', Rule::enum(PassengerStatus::class)],
+        ]);
+
+        // Stap 2: Pas de status van de passagier aan naar goedgekeurd of afgewezen.
+        if ()
     }
 }

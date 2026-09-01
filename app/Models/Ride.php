@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\PassengerStatus;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Ride extends Model
@@ -33,7 +35,22 @@ class Ride extends Model
      */
     public function passengers()
     {
-        return $this->belongsToMany(Membership::class, 'ride_passenger');
+        return $this->belongsToMany(Membership::class, 'ride_passenger')
+            ->withPivot('status')
+            ->withTimestamps();
+    }
+
+    /**
+     * Helper functions.
+     */
+    public function approvedPassengers()
+    {
+        return $this->passengers()->wherePivot('status', PassengerStatus::APPROVED->value);
+    }
+
+    public function pendingPassengers()
+    {
+        return $this->passengers()->wherePivot('status', PassengerStatus::PENDING->value);
     }
 
     /**

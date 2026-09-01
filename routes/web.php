@@ -44,6 +44,9 @@ Route::get('/ritten/{id}', [RideController::class, 'show'])->name('ritten.show')
 Route::post('/ritten', [RideController::class, 'store'])->name('ritten.store');
 Route::post('/ritten/joinRide/{id}', [RideController::class, 'joinRide'])->name('ritten.join');
 
+Route::patch('/rides/{ride}/passengers/{membership}', [RideController::class, 'updatePassengerStatus'])
+    ->name('rides.passengers.update');
+
 // De overzichtspagina waar je naartoe wordt gestuurd na het succesvol aanmelden
 // Route::get('/ritten', function () {
 //     return "Hier komt straks het overzicht van alle ritten!";
