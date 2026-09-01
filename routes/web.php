@@ -57,4 +57,10 @@ Route::post('/admin/gebruikers/{user}/afkeuren', [AdminDashboardController::clas
 // })->name('rides.index');
 Route::get('/reset-password/{token}', [SetPasswordController::class, 'create'])->name('password.reset');
 Route::post('/reset-password', [SetPasswordController::class, 'store'])->name('password.update');
-Route::get('/home', function () { return view('home');})->name('home');
+Route::get('/home', function () {
+    if (! auth()->check()) {
+        return redirect()->route('welcome');
+    }
+
+    return view('home');
+})->name('home');
