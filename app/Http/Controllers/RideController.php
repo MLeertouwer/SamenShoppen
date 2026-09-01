@@ -102,21 +102,44 @@ class RideController extends Controller
      */
     public function joinRide($id)
     {
-        // 1. Haal de rit op en tel direct het aantal passagiers
         $ride = Ride::withCount('passengers')->findOrFail($id);
         $membership = Membership::where('user_id', auth()->id())->first();
 
-        // 1. Check eerst of de gebruiker al is aangemeld 👥
-        if ($ride->passengers->contains($membership->id)) {
-            return redirect()->back()->with('error', 'Je bent al aangemeld voor deze rit!');
+        // 1. Check of de ingelogde gebruiker de driver zelf is.
+        if ($ride->driver_id === auth()->id()) {
+            return redirect()->back()->with('error', 'Je bent de bestuurder van deze rit!');
         }
 
-        // 2. Check daarna pas of de rit vol is 🚗
+        // 2. Check of deze passagier al een verzoek heeft gedaan
+        $existingPassenger = $ride->passengers()->where('membership_id', $membership->id)->first();
+
+        if ($existingPassenger) {
+            $status = $existingPassenger->pivot->status;
+
+            if ($status === PassengerStatus::APPROVED->value) {
+                return redirect()->back()->with('error', 'Je reist al mee met deze rit!');
+            }
+
+            if ($status === PassengerStatus::PENDING->value) {
+                return redirect()->back()->with('error', 'Je hebt al een verzoek ingediend.');
+            }
+
+            // Als het verzoek eerder was afgewezen (REJECTED), maken we er weer PENDING van
+            if ($status === PassengerStatus::REJECTED->value) {
+                $ride->passengers()->updateExistingPivot($membership->id, [
+                    'status' => PassengerStatus::PENDING->value,
+                ]);
+
+                return redirect()->back()->with('success', 'Je verzoek om mee te rijden is opnieuw verzonden!');
+            }
+        }
+
+        // 3. Check of de rit vol is
         if (($ride->max_passengers - $ride->passengers->count()) <= 0) {
             return redirect()->back()->with('error', 'Helaas, deze rit is al volgeboekt.');
         }
 
-        // 3. Als beide checks goed zijn, melden we de passagier aan 🎉
+        // 4. Eerste verzoek: voeg toe aan pivot-tabel
         $ride->passengers()->attach($membership->id, [
             'status' => PassengerStatus::PENDING->value,
         ]);
@@ -124,7 +147,7 @@ class RideController extends Controller
         return redirect()->back()->with('success', 'Je verzoek om mee te rijden is verzonden!');
     }
 
-    public function updatePassengerStatus(Request $request)
+    public function updatePassengerStatus(Request $request, Ride $ride, Membership $membership)
     {
         // Stap 1: Valideer de data
         $request->validate([
@@ -132,6 +155,11 @@ class RideController extends Controller
         ]);
 
         // Stap 2: Pas de status van de passagier aan naar goedgekeurd of afgewezen.
-        if ()
+        $ride->passengers()->updateExistingPivot($membership->id, [
+            'status' => $request->status,
+        ]);
+
+        // 3. Stuur de gebruiker terug met een succesmelding
+        return back()->with('success', 'Status van passagier succesvol bijgewerkt!');
     }
 }
