@@ -1,13 +1,15 @@
 <?php
 
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\RideController;
+use App\Http\Controllers\SetPasswordController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-})->name('home');
+})->name('welcome');
 
 Route::get('/contact', function () {
     return view('contact');
@@ -29,9 +31,13 @@ Route::get('/login', function () {
 
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 
-Route::get('/dashboard', function () {
-    return view('admin.dashboard');
-})->name('dashboard')->middleware('role:beheerder');
+Route::get('/dashboard', [AdminDashboardController::class, 'showApprovedUsers'])
+    ->name('dashboard')
+    ->middleware('role:beheerder');
+
+Route::get('/aanvragen', [AdminDashboardController::class, 'showRequests'])
+    ->name('aanvragen')
+    ->middleware('role:beheerder');
 /**
  * Routes voor de rides.
  */
@@ -43,7 +49,12 @@ Route::post('/ritten/joinRide/{id}', [RideController::class, 'joinRide'])->name(
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+Route::post('/admin/gebruikers/{user}/goedkeuren', [AdminDashboardController::class, 'approveUser'])->name('user.approve');
+Route::post('/admin/gebruikers/{user}/afkeuren', [AdminDashboardController::class, 'rejectUser'])->name('user.reject');
 // De overzichtspagina waar je naartoe wordt gestuurd na het succesvol aanmelden
 // Route::get('/ritten', function () {
 //     return "Hier komt straks het overzicht van alle ritten!";
 // })->name('rides.index');
+Route::get('/reset-password/{token}', [SetPasswordController::class, 'create'])->name('password.reset');
+Route::post('/reset-password', [SetPasswordController::class, 'store'])->name('password.update');
+Route::get('/home', function () { return view('home');})->name('home');
