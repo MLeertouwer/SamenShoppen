@@ -17,11 +17,25 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/dashboard');
+            if (Auth::user()->hasRole('beheerder')) {
+                return redirect()->intended('/dashboard');
+            }
+
+            return redirect()->intended('/home');
         }
 
         return back()->withErrors([
             'email' => 'Geen account gevonden met deze gegevens.',
         ]);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
     }
 }
