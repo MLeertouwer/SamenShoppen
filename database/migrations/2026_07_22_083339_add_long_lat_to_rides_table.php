@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('rides', function (Blueprint $table) {
-            $table->string('destination_address')->nullable()->after('destination_store');
-            $table->decimal('destination_longitude', 10, 7)->after('destination_store');
-            $table->decimal('destination_latitude', 10, 7)->after('destination_store');
+            $table->string('destination_address')->after('destination_store');
+            $table->decimal('destination_longitude', 10, 7)->after('destination_address');
+            $table->decimal('destination_latitude', 10, 7)->after('destination_longitude');
         });
     }
 
@@ -24,6 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('rides', function (Blueprint $table) {
+            $table->dropColumn('destination_address');
             $table->dropColumn('destination_longitude');
             $table->dropColumn('destination_latitude');
         });

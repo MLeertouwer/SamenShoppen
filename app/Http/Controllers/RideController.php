@@ -42,11 +42,34 @@ class RideController extends Controller
 
     public function show($id)
     {
-        // Zoek de rit op basis van het ID
-        $ride = Ride::with(['passengers.user'])->findOrFail($id);
+        // 1. Haal het Ride object op
+        $ride = Ride::with(['driver.user', 'passengers.user'])->findOrFail($id);
 
-        // Stuur de rit door naar de view 'rides.show'
-        return view('rides.show', compact('ride'));
+        // 2. Haal het actieve lidmaatschap op van de ingelogde user
+        $membership = Membership::where('user_id', auth()->id())->first();
+
+        // 3. Check of de ingelogde user de driver van de rit is 
+        $isDriver = $membership && ($ride->driver_id === $membership->id);
+
+        // 4. Check of de ingelogde user al een passagier is
+        $passengerRecord = ($membership && $ride->passengers)
+            ? $ride->passengers->firstWhere('id', $membership->id)
+            : null;
+
+        $currentUserStatus = $passengerRecord ? $passengerRecord->pivot->status : null;
+
+        // 5. Verdeel de passagiers over twee lijsten op basis van hun status
+        $approvedPassengers = $ride->passengers->where('pivot.status', PassengerStatus::APPROVED->value);
+        $pendingRequests = $ride->passengers->where('pivot.status', PassengerStatus::PENDING->value);
+
+        // 6. Geef alle variabelen door naar de view
+        return view('rides.show', compact(
+            'ride',
+            'isDriver',
+            'currentUserStatus',
+            'approvedPassengers',
+            'pendingRequests'
+        ));
     }
 
 
@@ -77,20 +100,18 @@ class RideController extends Controller
             'max_passengers'        => 'required|integer|min:1',
         ]);
 
-        // // 2. Gebruik de relaties om het membership van de ingelogde user op te halen
-        // $userMembership = Auth::user()->membership;
+        // 2. Haal het actieve lidmaatschap van de ingelogde gebruiker op
+        $membership = Membership::where('user_id', Auth::id())->first();
 
-        // // Check of de gebruiker een membership heeft
-        // if (!$userMembership) {
-        //     return redirect()->back()->with('error', 'Je moet een actief lidmaatschap hebben om een rit te melden.');
-        // }
+        if (!$membership) {
+            return redirect()->back()->with('error', 'Je moet een actief lidmaatschap hebben om een rit aan te maken.');
+        }
 
-        // 3. Voeg de driver_id toe van de Membership en een standaard status
-        // $validated['driver_id'] = $userMembership->id;
-        $validated['driver_id'] = Auth::id(); // TODO: terugzetten naar $userMembership->id zodra membership-functionaliteit bestaat
-        $validated['status'] = 'open';
+        // 3. Koppel de driver_id aan het membership ID en zet de status op open
+        $validated['driver_id'] = $membership->id;
+        $validated['status']    = 'open';
 
-        // 4. Sla de rit op met de ingevulde data
+        // 4. Sla de rit op
         Ride::create($validated);
 
         // 5. Stuur de gebruiker terug met een succesmelding
@@ -102,11 +123,17 @@ class RideController extends Controller
      */
     public function joinRide($id)
     {
-        $ride = Ride::withCount('passengers')->findOrFail($id);
+        $ride = Ride::findOrFail($id);
+
+        // Haal het lidmaatschap op van de ingelogde gebruiker
         $membership = Membership::where('user_id', auth()->id())->first();
 
-        // 1. Check of de ingelogde gebruiker de driver zelf is.
-        if ($ride->driver_id === auth()->id()) {
+        if (!$membership) {
+            return redirect()->back()->with('error', 'Je hebt een actief lidmaatschap nodig om mee te rijden.');
+        }
+
+        // 1. Check of de ingelogde gebruiker de driver zelf is
+        if ($ride->driver_id === $membership->id) {
             return redirect()->back()->with('error', 'Je bent de bestuurder van deze rit!');
         }
 
@@ -124,7 +151,7 @@ class RideController extends Controller
                 return redirect()->back()->with('error', 'Je hebt al een verzoek ingediend.');
             }
 
-            // Als het verzoek eerder was afgewezen (REJECTED), maken we er weer PENDING van
+            // Als het verzoek eerder was afgewezen, maken we er weer PENDING van
             if ($status === PassengerStatus::REJECTED->value) {
                 $ride->passengers()->updateExistingPivot($membership->id, [
                     'status' => PassengerStatus::PENDING->value,
@@ -135,11 +162,11 @@ class RideController extends Controller
         }
 
         // 3. Check of de rit vol is
-        if (($ride->max_passengers - $ride->passengers->count()) <= 0) {
+        if (($ride->max_passengers - $ride->approvedPassengersCount()) <= 0) {
             return redirect()->back()->with('error', 'Helaas, deze rit is al volgeboekt.');
         }
 
-        // 4. Eerste verzoek: voeg toe aan pivot-tabel
+        // 4. Eerste verzoek
         $ride->passengers()->attach($membership->id, [
             'status' => PassengerStatus::PENDING->value,
         ]);

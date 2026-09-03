@@ -109,7 +109,7 @@
                 <!-- DYNAMISCHE ROUTE: Linkt nu naar ritten.show met het ID -->
                 <a href="{{ route('ritten.show', $ride->id) }}" class="block bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:border-blue-300 transition-all relative group">
 
-                    <div class="flex justify-between items-start gap-4 w-full">
+                    <div class="flex flex-col-reverse justify-between items-start gap-4 w-full">
                         <!-- Bestemming & Adres -->
                         <div class="flex items-start space-x-2.5 text-blue-600">
                             <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,8 +128,8 @@
 
                         <!-- Plekken over badge -->
                         @php
-                        $plekkenOver = $ride->max_passengers - $ride->passengers->count();
-                        $isPast = \Carbon\Carbon::parse($ride->departure_time)->isPast();
+                            $plekkenOver = $ride->max_passengers - $ride->approvedPassengersCount();
+                            $isPast = \Carbon\Carbon::parse($ride->departure_time)->isPast();
                         @endphp
 
                         <div class="flex flex-row items-end gap-1.5 flex-shrink-0">
@@ -180,8 +180,7 @@
                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                                 </svg>
-                                <span>{{ $ride->passengers->count() }} {{ $ride->passengers->count() == 1 ? 'passagier' : 'passagiers' }}</span>
-                            </div>
+                                <span>{{ $ride->approvedPassengersCount() }} {{ $ride->approvedPassengersCount() == 1 ? 'passagier' : 'passagiers' }}</span>                            </div>
                         </div>
                     </div>
 

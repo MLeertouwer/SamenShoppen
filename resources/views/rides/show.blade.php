@@ -6,7 +6,7 @@
     <div class="max-w-3xl mx-auto px-4 py-6 space-y-6">
 
         @php
-        $plekkenOver = $ride->max_passengers - $ride->passengers->count();
+        $plekkenOver = $ride->max_passengers - $ride->approvedPassengersCount();
         @endphp
 
         <a href="{{ route('ritten.index') }}" class="inline-flex items-center text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors">
@@ -98,57 +98,35 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
-                @php
-                // Omdat de user gegarandeerd ingelogd is, kunnen we direct zoeken naar het membership
-                $userMembership = \App\Models\Membership::where('user_id', auth()->id())->where('status', 'active')->first();
-
-                // Check of deze specifieke passagier al in de lijst staat
-                $reistAlMee = $userMembership ? $ride->passengers->contains($userMembership->id) : false;
-
-                // Check of de ingelogde user de driver van de rit is
-                $isDriver = ($ride->driver_id === auth()->id());
-
-                @endphp
-
                 @unless($isDriver)
-                @if ($reistAlMee)
-                <!-- Button blokkeren: Al aangemeld -->
-                <button type="button" disabled class="w-full bg-gray-100 text-gray-400 py-3 px-4 rounded-xl font-bold text-sm cursor-not-allowed flex items-center justify-center space-x-2 border border-gray-200">
-                    <span>Je reist al mee!</span>
-                </button>
-
-                @elseif ($plekkenOver <= 0)
-                    <!-- Button blokkeren: Rit is vol -->
-                    <button type="button" disabled class="w-full bg-gray-100 text-gray-400 py-3 px-4 rounded-xl font-bold text-sm cursor-not-allowed flex items-center justify-center space-x-2 border border-gray-200">
-                        <span>Helaas, deze rit is vol!</span>
-                    </button>
-
-                    @else
-                    <!-- Actieve button -->
-                    <form action="{{ route('ritten.join', $ride->id) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="w-full bg-[#0d0e1c] text-white py-3 px-4 rounded-xl font-bold text-sm">
-                            <span>Ik wil meerijden</span>
+                    @if ($currentUserStatus === \App\Enums\PassengerStatus::APPROVED->value)
+                        <!-- Gebruiker is goedgekeurd -->
+                        <button type="button" disabled class="w-full bg-gray-100 text-gray-400 py-3 px-4 rounded-xl font-bold text-sm cursor-not-allowed border border-gray-200">
+                            <span>Je reist al mee!</span>
                         </button>
-                    </form>
-                    @endif
-                    @endunless
 
-                    @if ($isDriver)
-                    <button class="w-full bg-[#0d0e1c] text-white py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center space-x-2">
-                        <svg class="w-4 h-4 text-white-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.2 9m2.2-9h10m0 0l2.2 9m-2.2-9h2.3M7 21a2 2 0 100-4 2 2 0 000 4zm10 0a2 2 0 100-4 2 2 0 000 4z"></path>
-                        </svg>
-                        <span>Voeg boodschappenlijst toe</span>
-                    </button>
+                    @elseif ($currentUserStatus === \App\Enums\PassengerStatus::PENDING->value)
+                        <!-- Verzoek is in behandeling -->
+                        <button type="button" disabled class="w-full bg-amber-50 text-amber-600 py-3 px-4 rounded-xl font-bold text-sm cursor-not-allowed border border-amber-200">
+                            <span>Verzoek is in behandeling </span>
+                        </button>
+
+                    @elseif ($plekkenOver <= 0)
+                        <!-- Rit is vol -->
+                        <button type="button" disabled class="w-full bg-gray-100 text-gray-400 py-3 px-4 rounded-xl font-bold text-sm cursor-not-allowed border border-gray-200">
+                            <span>Helaas, deze rit is vol!</span>
+                        </button>
+
                     @else
-                    <button class="w-full bg-white border border-gray-200 text-gray-800 py-3 px-4 rounded-xl font-bold text-sm hover:bg-gray-50 transition-all flex items-center justify-center space-x-2">
-                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.2 9m2.2-9h10m0 0l2.2 9m-2.2-9h2.3M7 21a2 2 0 100-4 2 2 0 000 4zm10 0a2 2 0 100-4 2 2 0 000 4z"></path>
-                        </svg>
-                        <span>Voeg boodschappenlijst toe</span>
-                    </button>
+                        <!-- Actieve knop: Nog niet aangemeld (of eerder afgewezen) -->
+                        <form action="{{ route('ritten.join', $ride->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="w-full bg-[#0d0e1c] text-white py-3 px-4 rounded-xl font-bold text-sm hover:bg-black transition-all">
+                                <span>{{ $currentUserStatus === \App\Enums\PassengerStatus::REJECTED->value ? 'Opnieuw verzoek indienen' : 'Ik wil meerijden' }}</span>
+                            </button>
+                        </form>
                     @endif
+                @endunless
             </div>
         </div>
 
@@ -177,7 +155,8 @@
                 @endif
             </div>
 
-            <div class="w-100 border-t border-gray-100 my-5"></div>
+            @if ($isDriver)
+                <div class="w-100 border-t border-gray-100 my-5"></div>
 
             <h2 class="text-sm font-bold text-gray-900 flex items-center space-x-2 mb-4">
                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,6 +211,7 @@
                 @endforeach
                 @endif
             </div>
+            @endif
         </div>
 
     </div>
