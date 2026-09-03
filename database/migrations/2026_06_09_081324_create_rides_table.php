@@ -13,11 +13,7 @@ return new class extends Migration
     {
         Schema::create('rides', function (Blueprint $table) {
             $table->id();
-            // LET OP: DEZE TERUGZETTEN ALS INLOGSYSTEEM BESCHIKBAAR IS
-            // $table->foreignId('driver_id')->constrained('memberships')->cascadeOnDelete();
-
-            $table->integer('driver_id');
-
+            $table->foreignId('driver_id')->constrained('memberships')->cascadeOnDelete();
             // Mandatory columns
             $table->string('destination_store');
             $table->timestamp('departure_time');

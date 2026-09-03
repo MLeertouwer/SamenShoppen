@@ -47,6 +47,9 @@ Route::get('/ritten/{id}', [RideController::class, 'show'])->name('ritten.show')
 Route::post('/ritten', [RideController::class, 'store'])->name('ritten.store');
 Route::post('/ritten/joinRide/{id}', [RideController::class, 'joinRide'])->name('ritten.join');
 
+Route::patch('/rides/{ride}/passengers/{membership}', [RideController::class, 'updatePassengerStatus'])
+    ->name('rides.passengers.update');
+
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::post('/admin/gebruikers/{user}/goedkeuren', [AdminDashboardController::class, 'approveUser'])->name('user.approve');

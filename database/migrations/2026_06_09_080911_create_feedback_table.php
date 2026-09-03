@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('membership_id')->constrained()->cascadeOnDelete();
 
             // Mandatory columns
-            $table->timestamp('timestamp');
             $table->text('content');
 
             // Optional columns (O)

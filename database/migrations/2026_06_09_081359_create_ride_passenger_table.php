@@ -18,7 +18,6 @@ return new class extends Migration
 
             // Mandatory columns
             $table->string('status');
-            $table->timestamp('timestamp');
             $table->boolean('liked');
 
             $table->timestamps();

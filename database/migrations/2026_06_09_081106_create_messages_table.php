@@ -17,7 +17,6 @@ return new class extends Migration
 
             // Mandatory columns
             $table->text('message_text');
-            $table->timestamp('timestamp');
 
             // Optional column (O) handled via Laravel soft deletes
             $table->softDeletes();
