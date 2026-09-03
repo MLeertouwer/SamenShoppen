@@ -67,3 +67,15 @@ Route::get('/home', function () {
 
     return view('home');
 })->name('home');
+
+Route::get('/ledenbeheren', [AdminDashboardController::class, 'showMembers'])
+    ->name('ledenbeheren')
+    ->middleware('role:beheerder');
+
+Route::delete('/ledenbeheren/{id}/verwijderen', [AdminDashboardController::class, 'destroy'])
+    ->name('admin.members.destroy')
+    ->middleware('role:beheerder');
+
+Route::get('/ledenbeheren/{id}', [AdminDashboardController::class, 'showMember'])
+    ->name('admin.members.show')
+    ->middleware('role:beheerder');
