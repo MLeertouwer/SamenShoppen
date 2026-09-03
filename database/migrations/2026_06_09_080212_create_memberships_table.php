@@ -17,7 +17,6 @@ return new class extends Migration
 
             // Mandatory columns
             $table->string('status');
-            $table->timestamp('timestamp');
             $table->foreignId('approved_by')->constrained('users');
 
             // Optional column (O)
