@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Membership;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -66,5 +67,16 @@ class RoleSeeder extends Seeder
 
         // Nu bestaat de user gegarandeerd, dus kunnen we de rol toewijzen
         $user->assignRole($role_beheerder);
+
+
+        // Maak een actief lidmaatschap aan voor de beheerder
+        Membership::firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'status'            => 'active',
+                'approved_by'       => $user->id, // Goedgekeurd door zichzelf/systeem
+                'paid_contribution' => false,      // Of false, afhankelijk van wat je wilt
+            ]
+        );
     }
 }
