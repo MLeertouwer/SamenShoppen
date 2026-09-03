@@ -1,7 +1,7 @@
 <x-layout>
-    <x-slot name="header">
-         <h5 class="text-xl font-semibold leading-none text-heading">Alle aanvragen</h5>
-    </x-slot>
+<x-slot name="header">
+    <h1 class="text-xl font-semibold leading-none text-heading text-center py-5">Alle aanvragen</h1>
+   </x-slot>
 
     <div class="flow-root">
         @if(session('success'))

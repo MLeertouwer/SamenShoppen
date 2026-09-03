@@ -53,7 +53,8 @@
 
     <div class="w-full p-6 bg-neutral-primary-soft border border-default rounded-base shadow-xs">
         <div class="flex items-center justify-between mb-4">
-            <h5 class="text-xl font-semibold leading-none text-heading">Verwerkte aanvragen</h5>
+            <h5 class="text-xl font-semibold leading-none text-heading">Nieuwe leden</h5>
+            <a href="{{ route('ledenbeheren') }}" class="font-medium text-fg-brand hover:underline">leden beheren</a>
         </div>
         <div class="flow-root">
             <ul role="list" class="divide-y divide-default">
