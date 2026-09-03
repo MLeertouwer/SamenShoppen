@@ -17,7 +17,7 @@ return new class extends Migration
 
             // Mandatory columns
             $table->string('status');
-            $table->foreignId('approved_by')->constrained('users');
+            $table->foreignId('approved_by')->nullable()->constrained('users');
 
             // Optional column (O)
             $table->decimal('paid_contribution', 8, 2)->nullable();
