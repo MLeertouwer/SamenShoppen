@@ -78,5 +78,26 @@ class RoleSeeder extends Seeder
                 'paid_contribution' => false,      // Of false, afhankelijk van wat je wilt
             ]
         );
+
+        $testUser = User::firstOrCreate(
+            ['email' => 'test@samenshoppen.nl'],
+            [
+                'name' => 'Test Gebruiker',
+                'address' => 'Teststraat 12',
+                'phone' => '0687654321',
+                'password' => bcrypt('wachtwoord123'),
+            ]
+        );
+        $testUser->assignRole($role_lid);
+
+        // Membership voor Testgebruiker (goedgekeurd door admin)
+        Membership::firstOrCreate(
+            ['user_id' => $testUser->id],
+            [
+                'status'            => 'approved',
+                'approved_by'       => 1,
+                'paid_contribution' => true,
+            ]
+        );
     }
 }
