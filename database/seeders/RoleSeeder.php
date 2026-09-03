@@ -94,7 +94,7 @@ class RoleSeeder extends Seeder
         Membership::firstOrCreate(
             ['user_id' => $testUser->id],
             [
-                'status'            => 'approved',
+                'status'            => 'active',
                 'approved_by'       => 1,
                 'paid_contribution' => true,
             ]
