@@ -5,10 +5,6 @@
 
     <div class="max-w-3xl mx-auto px-4 py-6 space-y-6">
 
-        @php
-        $plekkenOver = $ride->max_passengers - $ride->approvedPassengersCount();
-        @endphp
-
         <a href="{{ route('ritten.index') }}" class="inline-flex items-center text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors">
             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -16,7 +12,6 @@
             Terug
         </a>
 
-        <!-- Meldingen -->
         @if (session('success'))
         <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-800 text-sm font-semibold rounded-xl flex items-center space-x-2 shadow-sm animate-fade-in">
             <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,12 +32,28 @@
 
         <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100 relative">
 
-            <div class="md:absolute md:top-6 md:right-6 mb-4 md:mb-0 flex justify-start md:justify-end">
-                <span class="bg-black text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
-                    {{ $plekkenOver }} {{ $plekkenOver == 1 ? 'plek' : 'plekken' }} over
+            <!-- Status Badges Header (Gelijke grootte) -->
+            <div class="md:absolute md:top-6 md:right-6 mb-4 md:mb-0 flex items-center space-x-2 justify-start md:justify-end">
+                @if(($ride->status->value ?? $ride->status) === 'verlopen')
+                <span class="bg-gray-100 text-gray-700 border border-gray-300 text-xs font-bold px-3 py-1.5 rounded-full whitespace-nowrap shadow-sm">
+                    Afgelopen
+                </span>
+                @elseif(($ride->status->value ?? $ride->status) === 'vol')
+                <span class="bg-red-50 text-red-600 border border-red-200 text-xs font-bold px-3 py-1.5 rounded-full whitespace-nowrap shadow-sm">
+                    Vol
+                </span>
+                @else
+                <span class="bg-emerald-50 text-emerald-600 border border-emerald-200 text-xs font-bold px-3 py-1.5 rounded-full whitespace-nowrap shadow-sm">
+                    Open
+                </span>
+                @endif
+
+                <span class="bg-black text-white border border-black text-xs font-bold px-3 py-1.5 rounded-full whitespace-nowrap shadow-sm">
+                    {{ $ride->max_passengers - $ride->approvedPassengersCount() }} {{ ($ride->max_passengers - $ride->approvedPassengersCount()) == 1 ? 'plek' : 'plekken' }} over
                 </span>
             </div>
 
+            <!-- Details Rit -->
             <div class="flex items-start space-x-3 mt-1">
                 <svg class="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
@@ -50,11 +61,10 @@
                 </svg>
                 <div>
                     <h1 class="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">
-                        {{ $ride->destination_store}}
+                        {{ $ride->destination_store }}
                     </h1>
-                    <!-- Adres -->
                     <div>
-                        <p class=" text-xs font-semibold text-gray-500 mt-0.5 mb-5">
+                        <p class="text-xs font-semibold text-gray-500 mt-0.5 mb-5">
                             {{ $ride->destination_address }}
                         </p>
                     </div>
@@ -62,11 +72,12 @@
                         Aangemaakt door: <span class="font-medium text-gray-700">{{ $ride->driver->user->name }}</span>
                     </p>
                     <p class="text-sm text-gray-500 mt-1.5">
-                        Vertreklocatie: <span class="font-medium text-gray-700">{{ $ride->departure_address}}</span>
+                        Vertreklocatie: <span class="font-medium text-gray-700">{{ $ride->departure_address }}</span>
                     </p>
                 </div>
             </div>
 
+            <!-- Datum & Tijd -->
             <div class="grid grid-cols-2 gap-4 my-6 pt-5 border-t border-gray-100">
                 <div class="flex items-center space-x-3">
                     <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
@@ -91,45 +102,46 @@
                     <div>
                         <p class="text-[11px] uppercase tracking-wider font-bold text-gray-400">Tijd</p>
                         <p class="text-sm font-semibold text-gray-800">
-                            {{ \Carbon\Carbon::parse($ride->departure_time)->format('G:i') }}
+                            {{ \Carbon\Carbon::parse($ride->departure_time)->format('H:i') }}
                         </p>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
-                @unless($isDriver)
-                    @if ($currentUserStatus === \App\Enums\PassengerStatus::APPROVED->value)
-                        <!-- Gebruiker is goedgekeurd -->
-                        <button type="button" disabled class="w-full bg-gray-100 text-gray-400 py-3 px-4 rounded-xl font-bold text-sm cursor-not-allowed border border-gray-200">
-                            <span>Je reist al mee!</span>
-                        </button>
-
-                    @elseif ($currentUserStatus === \App\Enums\PassengerStatus::PENDING->value)
-                        <!-- Verzoek is in behandeling -->
-                        <button type="button" disabled class="w-full bg-amber-50 text-amber-600 py-3 px-4 rounded-xl font-bold text-sm cursor-not-allowed border border-amber-200">
-                            <span>Verzoek is in behandeling </span>
-                        </button>
-
-                    @elseif ($plekkenOver <= 0)
-                        <!-- Rit is vol -->
-                        <button type="button" disabled class="w-full bg-gray-100 text-gray-400 py-3 px-4 rounded-xl font-bold text-sm cursor-not-allowed border border-gray-200">
-                            <span>Helaas, deze rit is vol!</span>
-                        </button>
-
-                    @else
-                        <!-- Actieve knop: Nog niet aangemeld (of eerder afgewezen) -->
-                        <form action="{{ route('ritten.join', $ride->id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="w-full bg-[#0d0e1c] text-white py-3 px-4 rounded-xl font-bold text-sm hover:bg-black transition-all">
-                                <span>{{ $currentUserStatus === \App\Enums\PassengerStatus::REJECTED->value ? 'Opnieuw verzoek indienen' : 'Ik wil meerijden' }}</span>
-                            </button>
-                        </form>
-                    @endif
-                @endunless
+            <!-- Actie Knoppen -->
+            <div class="mt-6">
+                @if($isDriver)
+                <div class="p-3 bg-gray-50 border border-gray-200 rounded-xl text-center text-sm font-medium text-gray-600">
+                    Je bent de bestuurder van deze rit
+                </div>
+                @elseif(($ride->status->value ?? $ride->status) === 'verlopen')
+                <button type="button" disabled class="w-full bg-gray-100 text-gray-400 py-3 px-4 rounded-xl font-bold text-sm cursor-not-allowed border border-gray-200">
+                    <span>Rit is verlopen</span>
+                </button>
+                @elseif ($currentUserStatus === \App\Enums\PassengerStatus::APPROVED->value)
+                <button type="button" disabled class="w-full bg-green-50 text-green-700 py-3 px-4 rounded-xl font-bold text-sm cursor-not-allowed border border-green-200">
+                    <span>Je reist mee met deze rit!</span>
+                </button>
+                @elseif ($currentUserStatus === \App\Enums\PassengerStatus::PENDING->value)
+                <button type="button" disabled class="w-full bg-amber-50 text-amber-600 py-3 px-4 rounded-xl font-bold text-sm cursor-not-allowed border border-amber-200">
+                    <span>Verzoek is in behandeling</span>
+                </button>
+                @elseif (($ride->status->value ?? $ride->status) === 'vol')
+                <button type="button" disabled class="w-full bg-gray-100 text-gray-400 py-3 px-4 rounded-xl font-bold text-sm cursor-not-allowed border border-gray-200">
+                    <span>Helaas, deze rit is vol!</span>
+                </button>
+                @else
+                <form action="{{ route('ritten.join', $ride->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="w-full bg-[#0d0e1c] text-white py-3 px-4 rounded-xl font-bold text-sm hover:bg-black transition-all shadow-sm">
+                        <span>{{ $currentUserStatus === \App\Enums\PassengerStatus::REJECTED->value ? 'Opnieuw verzoek indienen' : 'Ik wil meerijden' }}</span>
+                    </button>
+                </form>
+                @endif
             </div>
         </div>
 
+        <!-- Passagiers en Verzoeken Sectie -->
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
             <h2 class="text-sm font-bold text-gray-900 flex items-center space-x-2 mb-4">
                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,52 +149,44 @@
                 </svg>
                 <span>Passagiers ({{ $ride->passengers->where('pivot.status', \App\Enums\PassengerStatus::APPROVED->value)->count() }})</span>
             </h2>
-            <!-- Passagierslijst -->
+
             <div class="mt-3 space-y-2">
-                @if($ride->passengers->isEmpty())
+                @if($ride->passengers->where('pivot.status', \App\Enums\PassengerStatus::APPROVED->value)->isEmpty())
                 <p class="text-xs text-gray-400 italic">Nog geen passagiers aangemeld.</p>
                 @else
                 @foreach($ride->passengers->where('pivot.status', \App\Enums\PassengerStatus::APPROVED->value) as $passenger)
-                <!-- Toon goedgekeurde passagier -->
                 <div class="flex items-center space-x-3 p-3 bg-blue-50/40 rounded-xl border border-blue-50/60">
-                    <div>
-                        <p class="text-sm font-bold text-gray-800">
-                            {{ $passenger->user->name }}
-                        </p>
-                    </div>
+                    <p class="text-sm font-bold text-gray-800">
+                        {{ $passenger->user->name }}
+                    </p>
                 </div>
                 @endforeach
                 @endif
             </div>
 
             @if ($isDriver)
-                <div class="w-100 border-t border-gray-100 my-5"></div>
+            <div class="w-100 border-t border-gray-100 my-5"></div>
 
             <h2 class="text-sm font-bold text-gray-900 flex items-center space-x-2 mb-4">
                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                {{-- Counter voor het aantal verzoeken --}}
-                <span>Verzoeken ({{ $ride->passengers->where('pivot.status', 'pending')->count() }})</span>
+                <span>Verzoeken ({{ $ride->passengers->where('pivot.status', \App\Enums\PassengerStatus::PENDING->value)->count() }})</span>
             </h2>
+
             <div class="mt-3 space-y-2">
-                @if($ride->passengers->where('pivot.status', 'pending')->isEmpty())
+                @if($ride->passengers->where('pivot.status', \App\Enums\PassengerStatus::PENDING->value)->isEmpty())
                 <p class="text-xs text-gray-400 italic">Nog geen verzoeken.</p>
                 @else
-                @foreach($ride->passengers->where('pivot.status', 'pending') as $verzoek)
-                {{-- Op mobiel onder elkaar (flex-col), vanaf 'sm' schermen naast elkaar (sm:flex-row) --}}
+                @foreach($ride->passengers->where('pivot.status', \App\Enums\PassengerStatus::PENDING->value) as $verzoek)
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-blue-50/40 rounded-xl border border-blue-50/60">
-
-                    {{-- Links: Naam van de passagier --}}
                     <div class="min-w-0">
-                        <p class="text-sm font-bold text-gray-800 truncate py-3">
+                        <p class="text-sm font-bold text-gray-800 truncate py-1">
                             {{ $verzoek->user->name }}
                         </p>
                     </div>
 
-                    {{-- Rechts/Onder: Knoppen (op mobiel elk 50% breed via flex-1) --}}
                     <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <!-- Goedkeuren -->
                         <form action="{{ route('rides.passengers.update', [$ride->id, $verzoek->id]) }}" method="POST" class="flex-1 sm:flex-none">
                             @csrf
                             @method('PATCH')
@@ -194,7 +198,6 @@
                             </button>
                         </form>
 
-                        <!-- Afwijzen -->
                         <form action="{{ route('rides.passengers.update', [$ride->id, $verzoek->id]) }}" method="POST" class="flex-1 sm:flex-none">
                             @csrf
                             @method('PATCH')
@@ -206,7 +209,6 @@
                             </button>
                         </form>
                     </div>
-
                 </div>
                 @endforeach
                 @endif

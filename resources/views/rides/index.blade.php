@@ -26,6 +26,10 @@
         $startOfMonth = \Carbon\Carbon::create($year, $month, 1);
         $daysInMonth = $startOfMonth->daysInMonth;
         $blankDays = $startOfMonth->isoWeekday() - 1;
+
+        // Navigatie datums voor de vorige en volgende maand
+        $prevMonth = $startOfMonth->copy()->subMonth();
+        $nextMonth = $startOfMonth->copy()->addMonth();
         @endphp
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -34,11 +38,26 @@
             <div class="lg:col-span-5 w-full max-w-md mx-auto lg:mx-0">
                 <div class="bg-white shadow-sm rounded-2xl overflow-hidden border border-gray-100">
 
+                    <!-- Maand Header met Navigatie -->
                     <div class="bg-blue-600 px-4 py-4 flex justify-between items-center text-white font-bold">
-                        <span class="text-lg tracking-wide capitalize">{{ $startOfMonth->locale('nl')->isoFormat('MMMM') }}</span>
-                        <span class="text-lg tracking-wide">{{ $year }}</span>
+                        <a href="?month={{ $prevMonth->month }}&year={{ $prevMonth->year }}" class="p-1 rounded-lg hover:bg-blue-700 transition-colors" title="Vorige maand">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </a>
+
+                        <span class="text-lg tracking-wide capitalize">
+                            {{ $startOfMonth->locale('nl')->isoFormat('MMMM YYYY') }}
+                        </span>
+
+                        <a href="?month={{ $nextMonth->month }}&year={{ $nextMonth->year }}" class="p-1 rounded-lg hover:bg-blue-700 transition-colors" title="Volgende maand">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
                     </div>
 
+                    <!-- Dagen van de week -->
                     <div class="grid grid-cols-7 gap-1 p-4 text-center text-xs font-bold text-gray-400 border-b">
                         @foreach(\Carbon\CarbonPeriod::create(\Carbon\Carbon::now()->startOfWeek(), 7) as $date)
                         <div class="capitalize">
@@ -47,6 +66,7 @@
                         @endforeach
                     </div>
 
+                    <!-- Dagen van de maand -->
                     <div class="grid grid-cols-7 gap-y-3 gap-x-2 p-4 text-center text-sm font-medium">
                         @for ($i = 0; $i < $blankDays; $i++)
                             <div>
@@ -65,7 +85,7 @@
                         @if($hasRides)
                         <a href="?month={{ $month }}&year={{ $year }}&selected_date={{ $currentDateString }}"
                             class="relative flex items-center justify-center h-10 w-10 mx-auto rounded-full transition-all hover:scale-110 cursor-pointer
-                                   {{ $isSelected ? 'bg-indigo-900 text-white shadow-md' : ($isToday ? 'bg-blue-600 text-white shadow-sm' : 'bg-blue-50/50') }}">
+                                          {{ $isSelected ? 'bg-indigo-900 text-white shadow-md' : ($isToday ? 'bg-blue-600 text-white shadow-sm' : 'bg-blue-50/80') }}">
 
                             <span class="font-bold text-base {{ $isSelected || $isToday ? 'text-white' : 'text-blue-600' }}">
                                 {{ $day }}
@@ -75,7 +95,7 @@
                         </a>
                         @else
                         <div class="relative flex items-center justify-center h-10 w-10 mx-auto rounded-full 
-                                    {{ $isToday ? 'bg-blue-600 text-white shadow-sm' : '' }}">
+                                            {{ $isToday ? 'bg-blue-600 text-white shadow-sm' : '' }}">
                             <span class="{{ $isToday ? 'text-white font-bold' : 'text-gray-700' }}">
                                 {{ $day }}
                             </span>
@@ -83,10 +103,11 @@
                         @endif
                         @endfor
                 </div>
+
             </div>
         </div>
 
-        <!-- RECHTER KOLOM: Rittenlijst (Foto 1 Stijl) -->
+        <!-- RECHTER KOLOM: Rittenlijst -->
         <div class="lg:col-span-7 w-full">
             @if($selectedDate)
             @php
@@ -106,10 +127,15 @@
             @else
             <div class="space-y-4">
                 @foreach($selectedRides as $ride)
-                <!-- DYNAMISCHE ROUTE: Linkt nu naar ritten.show met het ID -->
+                @php
+                $approvedCount = $ride->approvedPassengersCount();
+                $plekkenOver = max(0, $ride->max_passengers - $approvedCount);
+                $statusValue = $ride->status->value ?? $ride->status;
+                @endphp
+
                 <a href="{{ route('ritten.show', $ride->id) }}" class="block bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:border-blue-300 transition-all relative group">
 
-                    <div class="flex flex-col-reverse justify-between items-start gap-4 w-full">
+                    <div class="flex flex-col sm:flex-row justify-between items-start gap-4 w-full">
                         <!-- Bestemming & Adres -->
                         <div class="flex items-start space-x-2.5 text-blue-600">
                             <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,27 +152,18 @@
                             </div>
                         </div>
 
-                        <!-- Plekken over badge -->
-                        @php
-                            $plekkenOver = $ride->max_passengers - $ride->approvedPassengersCount();
-                            $isPast = \Carbon\Carbon::parse($ride->departure_time)->isPast();
-                        @endphp
-
-                        <div class="flex flex-row items-end gap-1.5 flex-shrink-0">
-
+                        <!-- Badges -->
+                        <div class="flex flex-row items-center gap-1.5 flex-shrink-0">
                             <!-- Status badge -->
-                            @if($isPast)
-                            <!-- 3. Rit is geweest -->
+                            @if($statusValue === 'verlopen' || \Carbon\Carbon::parse($ride->departure_time)->isPast())
                             <span class="bg-gray-100 text-gray-600 border border-gray-300 text-[11px] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap">
                                 Afgelopen
                             </span>
-                            @elseif($plekkenOver <= 0)
-                                <!-- 2. Geen plek meer -->
+                            @elseif($statusValue === 'vol' || $plekkenOver <= 0)
                                 <span class="bg-red-50 text-red-600 border border-red-200 text-[11px] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap">
-                                    Volgeboekt
+                                Vol
                                 </span>
                                 @else
-                                <!-- 1. Nog plek open -->
                                 <span class="bg-emerald-50 text-emerald-600 border border-emerald-200 text-[11px] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap">
                                     Open
                                 </span>
@@ -160,14 +177,14 @@
                     </div>
 
                     <!-- Details Rij -->
-                    <div class="flex flex-col flex-wrap gap-2 text-xs font-semibold text-gray-500 ml-7 pt-3 border-t border-gray-50">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-semibold text-gray-500 pt-3 mt-3 border-t border-gray-50">
 
                         <!-- Bestuurder -->
-                        <p class="text-sm text-gray-500">
-                            Aangemaakt door: <span class="text-gray-700 font-medium">{{ $ride->driver->user->name ?? 'undefined' }}</span>
+                        <p class="text-xs text-gray-500">
+                            Aangemaakt door: <span class="text-gray-700 font-bold">{{ $ride->driver->user->name ?? 'Onbekend' }}</span>
                         </p>
 
-                        <div class="flex flex-row gap-2">
+                        <div class="flex flex-row gap-4">
                             <!-- Tijd -->
                             <div class="flex items-center space-x-1">
                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,7 +197,8 @@
                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                                 </svg>
-                                <span>{{ $ride->approvedPassengersCount() }} {{ $ride->approvedPassengersCount() == 1 ? 'passagier' : 'passagiers' }}</span>                            </div>
+                                <span>{{ $approvedCount }} / {{ $ride->max_passengers }} passagiers</span>
+                            </div>
                         </div>
                     </div>
 

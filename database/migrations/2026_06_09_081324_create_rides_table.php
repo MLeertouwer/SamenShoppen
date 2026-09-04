@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('driver_id')->constrained('memberships')->cascadeOnDelete();
             // Mandatory columns
             $table->string('destination_store');
-            $table->timestamp('departure_time');
+            $table->dateTime('departure_time');
             $table->integer('max_passengers');
 
             // Seperate columns for departure_place for both coördinates

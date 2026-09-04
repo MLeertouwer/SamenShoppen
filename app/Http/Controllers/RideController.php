@@ -18,24 +18,49 @@ class RideController extends Controller
 {
     public function index(Request $request)
     {
-        // Pakt de huidige maand/jaar
+        // 1. Pas de status aan van verlopen ritten
+        Ride::where('departure_time', '<', now())
+            ->whereIn('status', ['open', 'vol'])
+            ->update(['status' => 'verlopen']);
+
         $month = $request->get('month', Carbon::now()->month);
         $year = $request->get('year', Carbon::now()->year);
-
-        // Haal de gekozen datum op uit de URL
         $selectedDate = $request->get('selected_date');
 
-        // Haal de ritten op van deze maand
-        $rides = Ride::whereMonth('departure_time', $month)
+        // 2. Haal de ritten op van deze maand
+        $rides = Ride::with('passengers')
+            ->whereMonth('departure_time', $month)
             ->whereYear('departure_time', $year)
             ->get();
+
+        // 3. Controleer en update de status VEILIG zonder andere kolommen te raken
+        foreach ($rides as $ride) {
+            $statusValue = is_object($ride->status) ? $ride->status->value : $ride->status;
+
+            if ($statusValue !== 'verlopen') {
+                $approvedPassengersCount = $ride->passengers
+                    ->where('pivot.status', \App\Enums\PassengerStatus::APPROVED->value)
+                    ->count();
+
+                // Als de rit vol zit
+                if ($approvedPassengersCount >= $ride->max_passengers && $statusValue !== 'vol') {
+                    // Gebruik direct de DB query om ALLEEN de status kolom aan te passen
+                    Ride::where('id', $ride->id)->update(['status' => 'vol']);
+                    $ride->status = 'vol'; // Update ook het object in het geheugen voor de view
+                }
+                // Als er weer plek is
+                elseif ($approvedPassengersCount < $ride->max_passengers && $statusValue === 'vol') {
+                    Ride::where('id', $ride->id)->update(['status' => 'open']);
+                    $ride->status = 'open'; // Update ook het object in het geheugen voor de view
+                }
+            }
+        }
 
         // Groepeer de ritten op datum
         $ridesPerDay = $rides->groupBy(function ($ride) {
             return Carbon::parse($ride->departure_time)->format('Y-m-d');
         });
 
-        // Stuur alles naar de view
         return view('rides.index', compact('ridesPerDay', 'month', 'year', 'selectedDate'));
     }
 

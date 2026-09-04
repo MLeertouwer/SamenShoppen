@@ -95,7 +95,7 @@ class RoleSeeder extends Seeder
             ['user_id' => $testUser->id],
             [
                 'status'            => 'active',
-                'approved_by'       => 0,
+                'approved_by'       => 1,
                 'paid_contribution' => true,
             ]
         );
