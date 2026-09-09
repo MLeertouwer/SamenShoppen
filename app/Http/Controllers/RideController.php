@@ -70,30 +70,34 @@ class RideController extends Controller
         // 1. Haal het Ride object op
         $ride = Ride::with(['driver.user', 'passengers.user'])->findOrFail($id);
 
-        // 2. Haal het actieve lidmaatschap op van de ingelogde user
+        // 2. Check of het een boodschappenrit is
+        $isGrocery = $ride->is_grocery_only;
+
+        // 3. Haal het actieve lidmaatschap op van de ingelogde user
         $membership = Membership::where('user_id', auth()->id())->first();
 
-        // 3. Check of de ingelogde user de driver van de rit is 
+        // 4. Check of de ingelogde user de driver van de rit is 
         $isDriver = $membership && ($ride->driver_id === $membership->id);
 
-        // 4. Check of de ingelogde user al een passagier is
+        // 5. Check of de ingelogde user al een passagier is
         $passengerRecord = ($membership && $ride->passengers)
             ? $ride->passengers->firstWhere('id', $membership->id)
             : null;
 
         $currentUserStatus = $passengerRecord ? $passengerRecord->pivot->status : null;
 
-        // 5. Verdeel de passagiers over twee lijsten op basis van hun status
+        // 6. Verdeel de passagiers over twee lijsten op basis van hun status
         $approvedPassengers = $ride->passengers->where('pivot.status', PassengerStatus::APPROVED->value);
         $pendingRequests = $ride->passengers->where('pivot.status', PassengerStatus::PENDING->value);
 
-        // 6. Geef alle variabelen door naar de view
+        // 7. Geef alle variabelen door naar de view
         return view('rides.show', compact(
             'ride',
             'isDriver',
             'currentUserStatus',
             'approvedPassengers',
-            'pendingRequests'
+            'pendingRequests',
+            'isGrocery'
         ));
     }
 
@@ -101,8 +105,14 @@ class RideController extends Controller
     /**
      * Toon het formulier om een nieuwe rit aan te maken.
      */
-    public function create()
+    public function create(Request $request)
     {
+        // Check de url voor een query parameter
+        if ($request->get('type') === 'boodschappen') {
+            return view('rides.create-groceries');
+        }
+
+        // Anders tonen we het normale formulier
         return view('rides.create');
     }
 
@@ -118,10 +128,11 @@ class RideController extends Controller
             'destination_address'   => 'required|string|max:255',
             'destination_longitude' => 'required|numeric',
             'destination_latitude'  => 'required|numeric',
-            'departure_address'     => 'required|string|max:255',
-            'departure_longitude'   => 'required|numeric',
-            'departure_latitude'    => 'required|numeric',
+            'departure_address'     => 'nullable|string|max:255',
+            'departure_longitude'   => 'nullable|numeric',
+            'departure_latitude'    => 'nullable|numeric',
             'departure_time'        => 'required|date|after:now',
+            'is_grocery_only'       => 'required|boolean',
             'max_passengers'        => 'required|integer|min:1',
         ]);
 
@@ -134,7 +145,7 @@ class RideController extends Controller
 
         // 3. Koppel de driver_id aan het membership ID en zet de status op open
         $validated['driver_id'] = $membership->id;
-        $validated['status']    = 'open';
+        $validated['status'] = 'open';
 
         // 4. Sla de rit op
         Ride::create($validated);
@@ -146,7 +157,7 @@ class RideController extends Controller
     /**
      * Koppel de passagiers aan de ritten.
      */
-    public function joinRide($id)
+    public function joinRide(Request $request, $id)
     {
         $ride = Ride::findOrFail($id);
 
@@ -180,6 +191,7 @@ class RideController extends Controller
             if ($status === PassengerStatus::REJECTED->value) {
                 $ride->passengers()->updateExistingPivot($membership->id, [
                     'status' => PassengerStatus::PENDING->value,
+                    'delivery_address' => $request->input('delivery_address'),
                 ]);
 
                 return redirect()->back()->with('success', 'Je verzoek om mee te rijden is opnieuw verzonden!');
@@ -194,6 +206,7 @@ class RideController extends Controller
         // 4. Eerste verzoek
         $ride->passengers()->attach($membership->id, [
             'status' => PassengerStatus::PENDING->value,
+            'delivery_address' => $request->input('delivery_address'),
         ]);
 
         return redirect()->back()->with('success', 'Je verzoek om mee te rijden is verzonden!');
