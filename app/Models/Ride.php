@@ -18,6 +18,7 @@ class Ride extends Model
         'departure_time',
         'max_passengers',
         'status',
+        'is_grocery_only',
         'departure_longitude',
         'departure_latitude',
         'departure_address',
@@ -37,7 +38,7 @@ class Ride extends Model
     public function passengers()
     {
         return $this->belongsToMany(Membership::class, 'ride_passenger')
-            ->withPivot('status')
+            ->withPivot('status', 'delivery_address')
             ->withTimestamps();
     }
 
