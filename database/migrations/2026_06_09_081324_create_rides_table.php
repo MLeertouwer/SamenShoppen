@@ -20,8 +20,8 @@ return new class extends Migration
             $table->integer('max_passengers');
 
             // Seperate columns for departure_place for both coördinates
-            $table->decimal('departure_longitude', 10, 7);
-            $table->decimal('departure_latitude', 10, 7);
+            $table->decimal('departure_longitude', 10, 7)->nullable();
+            $table->decimal('departure_latitude', 10, 7)->nullable();
 
 
             // Optional column (O)
