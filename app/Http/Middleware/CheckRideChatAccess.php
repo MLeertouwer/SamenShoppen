@@ -13,12 +13,15 @@ class CheckRideChatAccess
         // Haal het ride object op
         $ride = $request->route('ride');
 
-        // Als de ride bestaat,check of de ingelogde user de driver of een passagier is, zo niet, return 403.
         if ($ride) {
+            // Controleer of de gebruiker een beheerder is 
+            $isAdmin = $isAdmin = $request->user()->hasRole('beheerder') ?? false;
+
             $isDriver = optional($ride->driver)->user_id === $request->user()->id;
             $isApprovedPassenger = $ride->approvedPassengers()->where('user_id', $request->user()->id)->exists();
 
-            if (! $isDriver && ! $isApprovedPassenger) {
+            // Als de gebruiker géén beheerder, driver of goedgekeurde passagier is, blokkeer dan de toegang
+            if (! $isAdmin && ! $isDriver && ! $isApprovedPassenger) {
                 abort(403, 'Je hebt geen toegang tot deze chat.');
             }
         }
