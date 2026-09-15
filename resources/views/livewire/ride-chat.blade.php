@@ -10,7 +10,7 @@
         </div>
 
         <!-- Terugknop -->
-        <a href="{{ route('ritten.show', $ride->id) }}" class="inline-flex items-center justify-center text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl shadow-xs transition-colors">
+        <a href="{{ route('ritten.show', $ride->id) }}" class="inline-flex items-center justify-center text-sm font-semibold text-white bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded-xl shadow-xs transition-colors">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
@@ -42,7 +42,7 @@
 
                     <div wire:key="message-{{ $message->id }}" class="flex flex-col {{ $isMe ? 'items-end' : 'items-start' }} group relative">
                         {{-- De eigenlijke berichtballon (alleen de tekst en tijd) --}}
-                        <div class="max-w-[100%] rounded-2xl px-4 py-2 text-sm shadow-xs {{ $isMe ? 'bg-blue-600 text-white rounded-br-none' : 'bg-gray-100 text-gray-800 rounded-bl-none' }}">
+                        <div class="max-w-[100%] rounded-2xl px-4 py-2 text-sm shadow-xs {{ $isMe ? 'bg-orange-600 text-white rounded-br-none' : 'bg-gray-100 text-gray-800 rounded-bl-none' }}">
                             <p>{{ $message->message_text }}</p>
                         </div>
 
@@ -62,8 +62,8 @@
         <!-- Bericht versturen -->
         <form wire:submit="sendMessage" class="mt-4 pt-3 border-t border-gray-100 flex gap-2">
             <!-- Input field met een wire:key om ervoor te zorgen dat het veld geleegd word zodra het bericht is verstuurd -->
-            <input type="text" wire:model="messageText" placeholder="Typ een bericht..." wire:key="input-{{ $formKey }}" class="flex-1 border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-colors shadow-xs flex items-center justify-center">
+            <input type="text" wire:model="messageText" placeholder="Typ een bericht..." wire:key="input-{{ $formKey }}" class="flex-1 border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition">
+            <button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 py-2 rounded-xl text-sm transition-colors shadow-xs flex items-center justify-center">
                 Verstuur
             </button>
         </form>
