@@ -3,7 +3,7 @@
 
     <div class="max-w-6xl mx-auto px-4 py-6">
 
-        <!-- Header sectie -->
+        <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-gray-100 pb-5 mb-6 gap-4">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Ritten</h1>
@@ -38,7 +38,7 @@
 
                     <!-- Optie 1: Passagiersrit -->
                     <a href="{{ route('ritten.create') }}" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800/60 transition">
-                        <span class="p-1.5 bg-blue-950 text-blue-400 rounded-lg flex items-center justify-center">
+                        <span class="p-1.5 bg-orange-950 text-orange-400 rounded-lg flex items-center justify-center">
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -83,8 +83,8 @@
                 <div class="bg-white shadow-sm rounded-2xl overflow-hidden border border-gray-100">
 
                     <!-- Maand Header met Navigatie -->
-                    <div class="bg-blue-600 px-4 py-4 flex justify-between items-center text-white font-bold">
-                        <a href="?month={{ $prevMonth->month }}&year={{ $prevMonth->year }}" class="p-1 rounded-lg hover:bg-blue-700 transition-colors" title="Vorige maand">
+                    <div class="bg-orange-600 px-4 py-4 flex justify-between items-center text-white font-bold">
+                        <a href="?month={{ $prevMonth->month }}&year={{ $prevMonth->year }}" class="p-1 rounded-lg hover:bg-orange-700 transition-colors" title="Vorige maand">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                             </svg>
@@ -94,7 +94,7 @@
                             {{ $startOfMonth->locale('nl')->isoFormat('MMMM YYYY') }}
                         </span>
 
-                        <a href="?month={{ $nextMonth->month }}&year={{ $nextMonth->year }}" class="p-1 rounded-lg hover:bg-blue-700 transition-colors" title="Volgende maand">
+                        <a href="?month={{ $nextMonth->month }}&year={{ $nextMonth->year }}" class="p-1 rounded-lg hover:bg-orange-700 transition-colors" title="Volgende maand">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
@@ -129,9 +129,9 @@
                         @if($hasRides)
                         <a href="?month={{ $month }}&year={{ $year }}&selected_date={{ $currentDateString }}"
                             class="relative flex items-center justify-center h-10 w-10 mx-auto rounded-full transition-all hover:scale-110 cursor-pointer
-                                          {{ $isSelected ? 'bg-indigo-900 text-white shadow-md' : ($isToday ? 'bg-blue-600 text-white shadow-sm' : 'bg-blue-50/80') }}">
+                                          {{ $isSelected ? 'bg-indigo-900 text-white shadow-md' : ($isToday ? 'bg-orange-600 text-white shadow-sm' : 'bg-orange-50/80') }}">
 
-                            <span class="font-bold text-base {{ $isSelected || $isToday ? 'text-white' : 'text-blue-600' }}">
+                            <span class="font-bold text-base {{ $isSelected || $isToday ? 'text-white' : 'text-orange-600' }}">
                                 {{ $day }}
                             </span>
 
@@ -139,7 +139,7 @@
                         </a>
                         @else
                         <div class="relative flex items-center justify-center h-10 w-10 mx-auto rounded-full 
-                                            {{ $isToday ? 'bg-blue-600 text-white shadow-sm' : '' }}">
+                                            {{ $isToday ? 'bg-orange-600 text-white shadow-sm' : '' }}">
                             <span class="{{ $isToday ? 'text-white font-bold' : 'text-gray-700' }}">
                                 {{ $day }}
                             </span>
@@ -151,7 +151,7 @@
             </div>
         </div>
 
-        <!-- RECHTER KOLOM: Rittenlijst -->
+        <!-- Rittenlijst -->
         <div class="lg:col-span-7 w-full">
             @if($selectedDate)
             @php
@@ -178,11 +178,11 @@
                 $isGrocery = $ride->is_grocery_only; // Check of het een boodschappenrit is
                 @endphp
 
-                <a href="{{ route('ritten.show', $ride->id) }}" class="block bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:border-blue-300 transition-all relative group">
+                <a href="{{ route('ritten.show', $ride->id) }}" class="block bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:border-orange-300 transition-all relative group">
 
                     <div class="flex flex-col sm:flex-row justify-between items-start gap-4 w-full">
                         <!-- Bestemming & Adres -->
-                        <div class="flex items-start space-x-2.5 {{ $isGrocery ? 'text-emerald-600' : 'text-blue-600' }}">
+                        <div class="flex items-start space-x-2.5 {{ $isGrocery ? 'text-emerald-600' : 'text-orange-600' }}">
                             @if($isGrocery)
                             <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path>
@@ -195,7 +195,7 @@
                             @endif
 
                             <div>
-                                <h3 class="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors leading-tight">
+                                <h3 class="font-bold text-gray-900 text-lg group-hover:text-orange-600 transition-colors leading-tight">
                                     {{ $ride->destination_store }}
                                 </h3>
                                 <p class="text-xs font-semibold text-gray-500 mt-1">
@@ -212,7 +212,7 @@
                                 🛒 Boodschappenrit
                             </span>
                             @else
-                            <span class="w-full text-center bg-blue-100 text-blue-800 border border-blue-200 text-[11px] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap flex items-center justify-center gap-1">
+                            <span class="w-full text-center bg-orange-100 text-orange-800 border border-orange-200 text-[11px] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap flex items-center justify-center gap-1">
                                 🚗 Passagiersrit
                             </span>
                             @endif
@@ -277,7 +277,7 @@
             @else
             <div class="bg-gray-50/60 border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center h-full flex flex-col items-center justify-center min-h-[300px]">
                 <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
                 <p class="text-sm font-medium text-gray-500">Klik op een datum in de kalender met een stipje om de beschikbare ritten te bekijken.</p>
             </div>

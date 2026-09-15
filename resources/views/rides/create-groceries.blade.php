@@ -24,7 +24,7 @@
             <form action="{{ route('ritten.store') }}" method="POST" class="space-y-5 font-serif text-indigo-900">
                 @csrf
 
-                <!-- Hidden field voor de boodschappenrit op 1 (true) -->
+                <!-- Hidden field voor de boodschappenrit op 1 -->
                 <input type="hidden" name="is_grocery_only" value="1">
 
                 <div>

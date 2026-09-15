@@ -38,8 +38,16 @@ class Ride extends Model
     public function passengers()
     {
         return $this->belongsToMany(Membership::class, 'ride_passenger')
-            ->withPivot('status', 'delivery_address')
+            ->withPivot('id', 'status', 'delivery_address')
             ->withTimestamps();
+    }
+
+    /**
+     * De relatie: Een rit kan meerdere messages hebben, maar een message hoort maar bij 1 rit.
+     */
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
     }
 
     /**

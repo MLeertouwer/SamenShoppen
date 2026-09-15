@@ -3103,9 +3103,23 @@
   background-color: #ffffff;
 }
 
-#modal-address-autocomplete-container gmp-place-autocomplete,
-#modal-address-autocomplete-container gmp-place-autocomplete::part(search-input),
-#modal-address-autocomplete-container gmp-place-autocomplete::part(container) {
+#modal-address-autocomplete-container:not(.grey-border) gmp-place-autocomplete,
+#modal-address-autocomplete-container:not(.grey-border) gmp-place-autocomplete::part(search-input) {
   border-radius: 0.75rem !important;
   overflow: hidden !important;
+}
+
+#modal-address-autocomplete-container gmp-place-autocomplete,
+gmp-place-autocomplete {
+  --gmp-md-sys-color-surface: #ffffff !important;
+  --gmp-md-sys-color-on-surface: #111827 !important;
+  color-scheme: light !important;
+  width: 100% !important;
+  display: block !important;
+  border: 2px solid rgb(239 68 68);
+
+}
+
+.grey-border gmp-place-autocomplete {
+  border: none !important;
 }
