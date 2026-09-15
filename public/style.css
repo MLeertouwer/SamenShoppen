@@ -3123,3 +3123,11 @@ gmp-place-autocomplete {
 .grey-border gmp-place-autocomplete {
   border: none !important;
 }
+
+#autocomplete-container gmp-place-autocomplete {
+  width: 100%;
+  --gm-color-background: #ffffff;
+  --gm-color-on-background: #374151;
+  --gm-color-outline: #e5e7eb;
+  --gm-shape-corner-full: 0.5rem;
+}
