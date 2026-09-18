@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\RideController;
 use App\Http\Controllers\SetPasswordController;
+use App\Http\Controllers\SetNewPasswordController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -79,3 +81,19 @@ Route::delete('/ledenbeheren/{id}/verwijderen', [AdminDashboardController::class
 Route::get('/ledenbeheren/{id}', [AdminDashboardController::class, 'showMember'])
     ->name('admin.members.show')
     ->middleware('role:beheerder');
+
+Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
+    ->middleware('guest')
+    ->name('password.request');
+
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+    ->middleware('guest')
+    ->name('password.email');
+
+Route::get('/reset-password/{token}', [SetNewPasswordController::class, 'create'])
+    ->middleware('guest')
+    ->name('password.reset');
+
+Route::post('/reset-password', [SetNewPasswordController::class, 'store'])
+    ->middleware('guest')
+    ->name('password.update');
