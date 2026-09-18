@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('membership_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('ride_id')->constrained()->cascadeOnDelete();
 
             // Mandatory columns
             $table->text('message_text');

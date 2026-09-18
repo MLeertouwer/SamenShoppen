@@ -6,7 +6,7 @@
     <div class="max-w-md mx-auto mt-8 p-4 relative">
 
         <div class="pr-8">
-            <h1 class="text-2xl font-bold text-red-600 font-serif mb-2">Zelf rijden, rit aanmelden</h1>
+            <h1 class="text-2xl font-bold text-red-600 font-serif mb-2">Nieuwe passagiersrit aanmaken</h1>
             <p class="text-indigo-900 font-serif text-sm mb-6">
                 Vul de gegevens in om je rit te plannen in de kalender, zodat andere shoppers zich kunnen opgeven.
             </p>
@@ -24,9 +24,11 @@
             <form action="{{ route('ritten.store') }}" method="POST" class="space-y-5 font-serif text-indigo-900">
                 @csrf
 
+                <!-- Hidden field voor de boodschappenrit (false) -->
+                <input type="hidden" name="is_grocery_only" value="0">
+
                 <div>
                     <label for="destination-autocomplete-container" class="block font-bold mb-1">Naar welke winkel ga je?</label>
-                    <!-- Google plaatst hier automatisch de autocomplete-zoekbalk in -->
                     <div id="destination-autocomplete-container" class="w-full text-indigo-900 placeholder-indigo-300"></div>
 
                     <!-- Verborgen velden die via JavaScript worden gevuld voor de database -->
@@ -102,7 +104,7 @@
                 } = await google.maps.importLibrary('places');
 
                 // ==========================================
-                // 1. BESTEMMING (Alleen Supermarkten) 🛒
+                // 1. BESTEMMING
                 // ==========================================
                 const destinationAutocomplete = new PlaceAutocompleteElement({
                     includedRegionCodes: ['nl'],
@@ -121,7 +123,7 @@
                     });
 
                     if (place.location) {
-                        // Sla op in de nieuwe bestemmingsvelden
+                        // Sla op in de hidden fields
                         document.getElementById('destination_latitude').value = place.location.lat();
                         document.getElementById('destination_longitude').value = place.location.lng();
                         document.getElementById('destination_address').value = place.formattedAddress;
@@ -131,7 +133,7 @@
                 });
 
                 // ==========================================
-                // 2. VERTREKPUNT (Alle Adressen) 🏠
+                // 2. VERTREKPUNT
                 // ==========================================
                 const departureAutocomplete = new PlaceAutocompleteElement({
                     includedRegionCodes: ['nl'], // Geen requestedTypes!
@@ -149,7 +151,7 @@
                     });
 
                     if (place.location) {
-                        // Sla op in de vertrekpuntvelden (oude logica behouden)
+                        // Sla op in de hidden fields
                         document.getElementById('departure_latitude').value = place.location.lat();
                         document.getElementById('departure_longitude').value = place.location.lng();
                         document.getElementById('departure_address').value = place.formattedAddress;

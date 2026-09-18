@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Samen Shoppen</title>
     <link rel="stylesheet" href="{{ asset('style.css') }}">
+
+    <!-- JS inladen via Vite voor Pop-up bij Ritten -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 

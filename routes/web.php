@@ -7,6 +7,9 @@ use App\Http\Controllers\RequestController;
 use App\Http\Controllers\RideController;
 use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\SetNewPasswordController;
+use App\Http\Middleware\CheckRideChatAccess;
+use App\Livewire\RideChat;
+use App\Http\Middleware\EnsureHasApprovedMembership;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -40,26 +43,38 @@ Route::get('/dashboard', [AdminDashboardController::class, 'showApprovedUsers'])
 Route::get('/aanvragen', [AdminDashboardController::class, 'showRequests'])
     ->name('aanvragen')
     ->middleware('role:beheerder');
+
 /**
  * Routes voor de rides.
  */
-Route::get('/ritten', [RideController::class, 'index'])->name('ritten.index');
-Route::get('/ritten/melden', [RideController::class, 'create'])->name('ritten.create');
-Route::get('/ritten/{id}', [RideController::class, 'show'])->name('ritten.show');
-Route::post('/ritten', [RideController::class, 'store'])->name('ritten.store');
-Route::post('/ritten/joinRide/{id}', [RideController::class, 'joinRide'])->name('ritten.join');
+Route::get('/ritten', [RideController::class, 'index'])->name('ritten.index')->middleware(['auth', EnsureHasApprovedMembership::class]);
+Route::get('/ritten/melden', [RideController::class, 'create'])->name('ritten.create')->middleware(['auth', EnsureHasApprovedMembership::class]);
+Route::get('/ritten/{id}', [RideController::class, 'show'])->name('ritten.show')->middleware(['auth', EnsureHasApprovedMembership::class]);
+Route::post('/ritten', [RideController::class, 'store'])->name('ritten.store')->middleware(['auth', EnsureHasApprovedMembership::class]);
+Route::post('/ritten/joinRide/{id}', [RideController::class, 'joinRide'])->name('ritten.join')->middleware(['auth', EnsureHasApprovedMembership::class]);
 
 Route::patch('/rides/{ride}/passengers/{membership}', [RideController::class, 'updatePassengerStatus'])
-    ->name('rides.passengers.update');
+    ->name('rides.passengers.update')->middleware(['auth', EnsureHasApprovedMembership::class]);
+
+Route::get('/ritten/{ride}/chat', RideChat::class)
+    ->name('ritten.chat')
+    ->middleware(['auth', CheckRideChatAccess::class]);
+
+
+Route::get('/ritten/{ride}/boodschappenlijst/{shoppingList}', [RideController::class, 'showShoppingList'])
+    ->name('ritten.shopping-lists.show');
+
+/**
+ * END - Routes voor de rides.
+ */
+
+
+
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::post('/admin/gebruikers/{user}/goedkeuren', [AdminDashboardController::class, 'approveUser'])->name('user.approve');
 Route::post('/admin/gebruikers/{user}/afkeuren', [AdminDashboardController::class, 'rejectUser'])->name('user.reject');
-// De overzichtspagina waar je naartoe wordt gestuurd na het succesvol aanmelden
-// Route::get('/ritten', function () {
-//     return "Hier komt straks het overzicht van alle ritten!";
-// })->name('rides.index');
 Route::get('/reset-password/{token}', [SetPasswordController::class, 'create'])->name('password.reset');
 Route::post('/reset-password', [SetPasswordController::class, 'store'])->name('password.update');
 Route::get('/home', function () {

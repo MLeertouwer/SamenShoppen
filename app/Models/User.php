@@ -55,4 +55,14 @@ class User extends Authenticatable implements CanResetPassword
     {
         return $this->hasOne(Membership::class);
     }
+
+    /**
+     * Check of de gebruiker een goedgekeurd lidmaatschap heeft.
+     */
+    public function hasApprovedMembership(): bool
+    {
+        return $this->membership()
+            ->where('status', 'active')
+            ->exists();
+    }
 }

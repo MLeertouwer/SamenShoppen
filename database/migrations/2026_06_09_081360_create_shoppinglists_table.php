@@ -13,13 +13,10 @@ return new class extends Migration
     {
         Schema::create('shoppinglists', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('membership_id')->constrained()->cascadeOnDelete();
-
-            // Mandatory columns
+            $table->foreignId('ride_passenger_id')->constrained('ride_passenger')->cascadeOnDelete();
             $table->string('title');
-            $table->boolean('is_delivery_request');
-            $table->string('file');
-
+            $table->boolean('is_delivery_request')->default(false);
+            $table->string('note')->nullable();
             $table->timestamps();
         });
     }
