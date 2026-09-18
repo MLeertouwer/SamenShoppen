@@ -17,5 +17,6 @@
         <button type="submit" class="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
             Inloggen
         </button>
+        <a href="{{ route('password.request') }}" class="ml-4 text-blue-500 hover:underline">Wachtwoord vergeten?</a>
     </form>
 </x-layout>

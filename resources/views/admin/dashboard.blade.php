@@ -12,41 +12,41 @@
         </div>
         <div class="flow-root">
             <ul role="list" class="divide-y divide-default">
-                @forelse ($accountrequest as $user)
-                    <li class="py-4 sm:py-4">
-                        <div class="flex items-center gap-2">
-                            <div class="flex-1 min-w-0 ms-2">
-                                <p class="font-medium text-heading truncate">
-                                    {{ $user->name }}
-                                </p>
-                                <p class="text-sm text-body truncate">
-                                    {{ $user->email }}
-                                </p>
-                            </div>
-                            @if ($user->status === 'Wacht op goedkeuring')
-                                <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                                    {{ $user->status }}
-                                </span>
-                            @elseif ($user->status === 'goedgekeurd')
-                                <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                                    {{ $user->status }}
-                                </span>
-                            @elseif ($user->status === 'afgekeurd')
-                                <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                                    {{ $user->status }}
-                                </span>
-                            @else
-                                <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                                    {{ $user->status }}
-                                </span>
-                            @endif
-                        </div>
-                    </li>
-                @empty
-                    <li class="py-4 sm:py-4">
-                        <p class="text-sm text-body">Er zijn geen openstaande aanvragen.</p>
-                    </li>
-                @endforelse
+@forelse ($accountrequest as $membership)
+    <li class="py-4 sm:py-4">
+        <div class="flex items-center gap-2">
+            <div class="flex-1 min-w-0 ms-2">
+                <p class="font-medium text-heading truncate">
+                    {{ $membership->user?->name }}
+                </p>
+                <p class="text-sm text-body truncate">
+                    {{ $membership->user?->email }}
+                </p>
+            </div>
+            @if ($membership->status === 'pending')
+                <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                    {{ $membership->status }}
+                </span>
+            @elseif ($membership->status === 'active')
+                <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                    {{ $membership->status }}
+                </span>
+            @elseif ($membership->status === 'rejected')
+                <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                    {{ $membership->status }}
+                </span>
+            @else
+                <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                    {{ $membership->status }}
+                </span>
+            @endif
+        </div>
+    </li>
+@empty
+    <li class="py-4 sm:py-4">
+        <p class="text-sm text-body">Er zijn geen openstaande aanvragen.</p>
+    </li>
+@endforelse
             </ul>
         </div>
     </div>
@@ -58,30 +58,30 @@
         </div>
         <div class="flow-root">
             <ul role="list" class="divide-y divide-default">
-                @forelse ($processedRequests as $user)
-                    <li class="py-4 sm:py-4">
-                        <div class="flex items-center gap-2">
-                            <div class="flex-1 min-w-0 ms-2">
-                                <p class="font-medium text-heading truncate">
-                                    {{ $user->name }}
-                                </p>
-                                <p class="text-sm text-body truncate">
-                                    {{ $user->email }}
-                                </p>
-                            </div>
-                            <div class="inline-flex items-center font-medium text-heading">
-                                @if ($user->status === 'goedgekeurd')
-                                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                                        {{ $user->status }}
-                                    </span>
-                                @elseif ($user->status === 'afgekeurd')
-                                    <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                                        {{ $user->status }}
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                    </li>
+                @forelse ($processedRequests as $membership)
+    <li class="py-4 sm:py-4">
+        <div class="flex items-center gap-2">
+            <div class="flex-1 min-w-0 ms-2">
+                <p class="font-medium text-heading truncate">
+                    {{ $membership->user?->name }}
+                </p>
+                <p class="text-sm text-body truncate">
+                    {{ $membership->user?->email }}
+                </p>
+            </div>
+            <div class="inline-flex items-center font-medium text-heading">
+                @if ($membership->status === 'active')
+                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        {{ $membership->status }}
+                    </span>
+                @elseif ($membership->status === 'rejected')
+                    <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        {{ $membership->status }}
+                    </span>
+                @endif
+            </div>
+        </div>
+    </li>
                 @empty
                     <li class="py-4 sm:py-4">
                         <div class="flex items-center gap-2">

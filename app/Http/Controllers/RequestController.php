@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Membership;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,15 @@ class RequestController extends Controller
             'phone' => 'required|string|max:15',
         ]);
 
-        User::create($validated);
+        $user = User::create($validated);
+
+        // membership aanmaken met membership model
+        $membership = Membership::create([
+            'user_id' => $user->id,
+            'status' => 'pending',
+            'approved_by' => null,
+            'paid_contribution' => false,
+        ]);
 
         return redirect()->route('requestform')->with('success', 'Accountgegevens aangevraagd, een admin zal deze goedkeuren');
     }

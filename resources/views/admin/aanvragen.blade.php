@@ -11,47 +11,47 @@
         @endif 
 
         <ul role="list" class="divide-y divide-default">
-            @forelse ($accountrequest as $user)
+            @forelse ($accountrequest as $membership)
             <li class="py-4 sm:py-4">
                 <div class="flex items-center gap-2">
                     <div class="flex-1 min-w-0 ms-2">
                         <p class="font-medium text-heading truncate">
-                            {{ $user->name }}
+                            {{ $membership->user->name }}
                         </p>
                         <p class="text-sm text-body truncate">
-                            {{ $user->email }}
+                            {{ $membership->user->email }}
                         </p>
                     </div>
                     <div class="inline-flex items-center font-medium text-heading">
-                @if ($user->status === 'Wacht op goedkeuring')
+                @if ($membership->status === 'pending')
                     <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                        {{ $user->status }}
+                        {{ $membership->status }}
                     </span>
-                @elseif ($user->status === 'goedgekeurd')
+                @elseif ($membership->status === 'active')
                     <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                        {{ $user->status }}
+                        {{ $membership->status }}
                     </span>
-                @elseif ($user->status === 'afgekeurd')
+                @elseif ($membership->status === 'rejected')
                     <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                        {{ $user->status }}
+                        {{ $membership->status }}
                     </span>
                 @else
                     <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                        {{ $user->status }}
+                        {{ $membership->status }}
                     </span>
                 @endif
             </div>
                 </div>
               <div class="mt-4 flex gap-2 ms-2">
       
-        <form action="{{ route('user.approve', $user->id) }}" method="POST">
+        <form action="{{ route('user.approve', $membership->user->id) }}" method="POST">
             @csrf
             <button type="submit" class="bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700">
                 Goedkeuren
             </button>
         </form>
 
-        <form action="{{ route('user.reject', $user->id) }}" method="POST">
+        <form action="{{ route('user.reject', $membership->user->id) }}" method="POST">
             @csrf
             <button type="submit" class="bg-red-600 text-white font-bold py-2 px-4 rounded hover:bg-red-700">
                 Afkeuren
