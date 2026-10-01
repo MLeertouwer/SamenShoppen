@@ -2,14 +2,15 @@
 
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MemberSuggestionsController;
 use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\RideController;
-use App\Http\Controllers\SetPasswordController;
 use App\Http\Controllers\SetNewPasswordController;
+use App\Http\Controllers\SetPasswordController;
 use App\Http\Middleware\CheckRideChatAccess;
-use App\Livewire\RideChat;
 use App\Http\Middleware\EnsureHasApprovedMembership;
+use App\Livewire\RideChat;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -60,17 +61,12 @@ Route::get('/ritten/{ride}/chat', RideChat::class)
     ->name('ritten.chat')
     ->middleware(['auth', CheckRideChatAccess::class]);
 
-
 Route::get('/ritten/{ride}/boodschappenlijst/{shoppingList}', [RideController::class, 'showShoppingList'])
     ->name('ritten.shopping-lists.show');
 
 /**
  * END - Routes voor de rides.
  */
-
-
-
-
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::post('/admin/gebruikers/{user}/goedkeuren', [AdminDashboardController::class, 'approveUser'])->name('user.approve');
@@ -112,3 +108,11 @@ Route::get('/reset-password/{token}', [SetNewPasswordController::class, 'create'
 Route::post('/reset-password', [SetNewPasswordController::class, 'store'])
     ->middleware('guest')
     ->name('password.update');
+
+Route::get('/ledensuggesties', [MemberSuggestionsController::class, 'create'])
+    ->middleware('auth')
+    ->name('suggesties.create');
+
+Route::post('/ledensuggesties', [MemberSuggestionsController::class, 'store'])
+    ->middleware('auth')
+    ->name('suggesties.store');

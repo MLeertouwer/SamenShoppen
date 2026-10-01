@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -64,5 +65,10 @@ class User extends Authenticatable implements CanResetPassword
         return $this->membership()
             ->where('status', 'active')
             ->exists();
+    }
+
+    public function suggestions(): HasMany
+    {
+        return $this->hasMany(Suggestion::class);
     }
 }
