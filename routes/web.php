@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MemberSuggestionsController;
 use App\Http\Controllers\PasswordResetLinkController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\RideController;
 use App\Http\Controllers\SetNewPasswordController;
@@ -116,3 +117,9 @@ Route::get('/ledensuggesties', [MemberSuggestionsController::class, 'create'])
 Route::post('/ledensuggesties', [MemberSuggestionsController::class, 'store'])
     ->middleware('auth')
     ->name('suggesties.store');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/betalen', [PaymentController::class, 'checkout'])->name('payment.checkout');
+    Route::get('/betalen/succes', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/betalen/annuleren', [PaymentController::class, 'cancel'])->name('payment.cancel');
+});
