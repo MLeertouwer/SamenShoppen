@@ -28,19 +28,17 @@ class AdminDashboardController extends Controller
 
     public function approveUser(User $user)
     {
-        // 1. User status bijwerken
-        $user->status = 'goedgekeurd';
-        $user->save();
-
-        // 2. Het bijbehorende lidmaatschap ophalen en op 'active' zetten
+        // 1. Het bijbehorende lidmaatschap ophalen en op 'active' zetten
         $membership = Membership::where('user_id', $user->id)->first();
+
         if ($membership) {
             $membership->status = 'active';
-            $membership->approved_by = auth()->id();
+            $membership->approved_by = auth()->id(); // 💡 auth()->id() is de ingelogde admin!
             $membership->save();
         }
-        $token = Password::createToken($user);
 
+        // 2. Wachtwoord-reset mail sturen naar de goedgekeurde gebruiker
+        $token = Password::createToken($user);
         $user->sendPasswordResetNotification($token);
 
         return redirect()->back()->with('success', 'Gebruiker goedgekeurd en welkomstmail verstuurd.');
@@ -48,10 +46,8 @@ class AdminDashboardController extends Controller
 
     public function rejectUser(User $user)
     {
-        $user->status = 'afgekeurd';
-        $user->save();
-
         $membership = Membership::where('user_id', $user->id)->first();
+
         if ($membership) {
             $membership->status = 'rejected';
             $membership->approved_by = auth()->id();

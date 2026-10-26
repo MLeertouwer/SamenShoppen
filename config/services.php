@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'tikkie' => [
+        'api_key' => env('TIKKIE_API_KEY'),
+    ],
+
 ];

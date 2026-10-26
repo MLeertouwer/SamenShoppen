@@ -479,18 +479,21 @@
                                     </button>
                                 </form>
                             </div>
-                        </div>
-                    </div>
+                        </div>  
                     @empty
                     <p class="text-xs text-gray-400 italic">Er zijn momenteel geen verzoeken in behandeling.</p>
                     @endforelse
                 </div>
             </div>
             @endif
-
-        </div>
-
     </div>
+
+    
+                                 <div class="flex items-center gap-2">
+                               <a href="{{ route('request.create', ['receiver_id' => $passenger->user->id]) }}" class="w-full bg-[#0d0e1c] text-white py-3 px-4 rounded-xl font-bold text-sm hover:bg-black transition-all shadow-sm text-center">
+                                  Betaalverzoek sturen
+                                </a>
+                            </div>
 
     <!-- JavaScript voor het inladen van de Google PlaceAutocompleteElement library -->
     <script>

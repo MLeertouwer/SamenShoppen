@@ -24,7 +24,7 @@ class PaymentController extends Controller
                     'product_data' => [
                         'name' => 'Onderhoudsbijdrage (Halfjaarlijks)',
                     ],
-                    'unit_amount' => $amount * 100, // Stripe rekent in centen (€ 10,00 = 1000)
+                    'unit_amount' => $amount * 100,
                 ],
                 'quantity' => 1,
             ]],

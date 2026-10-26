@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MemberHomeController;
 use App\Http\Controllers\MemberSuggestionsController;
 use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentRequestController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\RideController;
 use App\Http\Controllers\SetNewPasswordController;
@@ -74,13 +76,7 @@ Route::post('/admin/gebruikers/{user}/goedkeuren', [AdminDashboardController::cl
 Route::post('/admin/gebruikers/{user}/afkeuren', [AdminDashboardController::class, 'rejectUser'])->name('user.reject');
 Route::get('/reset-password/{token}', [SetPasswordController::class, 'create'])->name('password.reset');
 Route::post('/reset-password', [SetPasswordController::class, 'store'])->name('password.update');
-Route::get('/home', function () {
-    if (! auth()->check()) {
-        return redirect()->route('welcome');
-    }
-
-    return view('home');
-})->name('home');
+Route::get('/home', [MemberHomeController::class, 'index'])->name('home');
 
 Route::get('/ledenbeheren', [AdminDashboardController::class, 'showMembers'])
     ->name('ledenbeheren')
@@ -122,4 +118,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/betalen', [PaymentController::class, 'checkout'])->name('payment.checkout');
     Route::get('/betalen/succes', [PaymentController::class, 'success'])->name('payment.success');
     Route::get('/betalen/annuleren', [PaymentController::class, 'cancel'])->name('payment.cancel');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/payment-requests/create', [PaymentRequestController::class, 'create'])->name('request.create');
+    Route::post('/payment-requests', [PaymentRequestController::class, 'store'])->name('request.store');
 });

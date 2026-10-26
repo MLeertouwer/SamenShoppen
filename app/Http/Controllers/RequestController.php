@@ -19,7 +19,6 @@ class RequestController extends Controller
 
         $user = User::create($validated);
 
-        // membership aanmaken met membership model
         $membership = Membership::create([
             'user_id' => $user->id,
             'status' => 'pending',
