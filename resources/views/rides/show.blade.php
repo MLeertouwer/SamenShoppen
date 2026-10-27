@@ -328,174 +328,174 @@
         <!-- Passagiers & Aanmeldingen -->
         <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100 space-y-6">
 
-            <!-- Goedgekeurde Passagiers -->
-            <div>
-                <h2 class="text-sm font-bold text-gray-900 flex items-center gap-2 mb-3">
-                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                    </svg>
-                    <span>Passagiers ({{ $ride->passengers->where('pivot.status', \App\Enums\PassengerStatus::APPROVED->value)->count() }})</span>
-                </h2>
+    <!-- Goedgekeurde Passagiers -->
+    <div>
+        <h2 class="text-sm font-bold text-gray-900 flex items-center gap-2 mb-3">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+            <span>Passagiers ({{ $ride->passengers->where('pivot.status', \App\Enums\PassengerStatus::APPROVED->value)->count() }})</span>
+        </h2>
 
-                <div class="space-y-2">
-                    @forelse($ride->passengers->where('pivot.status', \App\Enums\PassengerStatus::APPROVED->value) as $passenger)
+        <div class="space-y-2">
+            @forelse($ride->passengers->where('pivot.status', \App\Enums\PassengerStatus::APPROVED->value) as $passenger)
 
-                    @php
-                    // Haal de boodschappenlijst op via de pivot ID
-                    $shoppingList = \App\Models\ShoppingList::where('ride_passenger_id', $passenger->pivot->id)->first();
-                    @endphp
+            @php
+            // Haal de boodschappenlijst op via de pivot ID
+            $shoppingList = \App\Models\ShoppingList::where('ride_passenger_id', $passenger->pivot->id)->first();
+            @endphp
 
-                    <div class="p-2.5 bg-gray-50 rounded-xl text-xs font-semibold text-gray-700 space-y-2 mb-2">
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="max-w-[50%]">
-                                <span class="font-bold text-sm text-gray-900 block">{{ $passenger->user->name }}</span>
+            <div class="p-2.5 bg-gray-50 rounded-xl text-xs font-semibold text-gray-700 space-y-2 mb-2">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="max-w-[50%]">
+                        <span class="font-bold text-sm text-gray-900 block">{{ $passenger->user->name }}</span>
 
-                                @if($isDriver || $passenger->id === auth()->id())
-                                @if(!empty($passenger->pivot->delivery_address))
-                                <span class="text-xs text-gray-600 block mt-0.5 font-normal">
-                                    <strong>Afleveradres:</strong> {{ $passenger->pivot->delivery_address }}
-                                </span>
-                                @endif
+                        @if($isDriver || $passenger->id === auth()->id())
+                        @if(!empty($passenger->pivot->delivery_address))
+                        <span class="text-xs text-gray-600 block mt-0.5 font-normal">
+                            <strong>Afleveradres:</strong> {{ $passenger->pivot->delivery_address }}
+                        </span>
+                        @endif
 
-                                @if($shoppingList && !empty($shoppingList->note))
-                                <span class="text-xs text-gray-600 block mt-0.5 font-normal">
-                                    <strong>Opmerking:</strong> {{ $shoppingList->note }}
-                                </span>
-                                @endif
-                                @endif
-                            </div>
+                        @if($shoppingList && !empty($shoppingList->note))
+                        <span class="text-xs text-gray-600 block mt-0.5 font-normal">
+                            <strong>Opmerking:</strong> {{ $shoppingList->note }}
+                        </span>
+                        @endif
+                        @endif
+                    </div>
 
-                            {{-- Status badge (blijft altijd rechtsboven) --}}
-                            <div class="flex flex-col items-end gap-2 shrink-0">
-                                <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-md">Goedgekeurd</span>
+                    {{-- Status badge --}}
+                    <div class="flex flex-col items-end gap-2 shrink-0">
+                        <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-md">Goedgekeurd</span>
 
-                                {{-- DESKTOP KNOP: Alleen zichtbaar op schermen vanaf 'sm' en groter, direct onder de badge --}}
-                                @if($shoppingList && ($isDriver || $passenger->id === auth()->id()))
-                                <div class="hidden sm:block">
-                                    <a href="{{ route('ritten.shopping-lists.show', ['ride' => $ride->id, 'shoppingList' => $shoppingList->id]) }}"
-                                        class="inline-flex items-center gap-1 text-[11px] bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-medium px-2.5 py-1 rounded-lg transition-colors">
-                                        <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path>
-                                        </svg>
-                                        Bekijk boodschappenlijst
-                                    </a>
-                                </div>
-                                @endif
-                            </div>
-                        </div>
-
-                        {{-- MOBIELE KNOP: Alleen zichtbaar op mobiel, onderaan de kaart --}}
+                        {{-- DESKTOP KNOP: Boodschappenlijst bekijken --}}
                         @if($shoppingList && ($isDriver || $passenger->id === auth()->id()))
-                        <div class="pt-1 block sm:hidden">
+                        <div class="hidden sm:block">
                             <a href="{{ route('ritten.shopping-lists.show', ['ride' => $ride->id, 'shoppingList' => $shoppingList->id]) }}"
                                 class="inline-flex items-center gap-1 text-[11px] bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-medium px-2.5 py-1 rounded-lg transition-colors">
                                 <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path>
                                 </svg>
-                                Bekijk boodschappenlijst
+                                Lijst bekijken
                             </a>
                         </div>
                         @endif
                     </div>
-                    @empty
-                    <p class="text-xs text-gray-400 italic">Nog geen passagiers aangemeld.</p>
-                    @endforelse
                 </div>
-            </div>
 
-            <!-- Openstaande Verzoeken (Alleen zichtbaar voor de bestuurder) -->
-            @if($isDriver)
-            <div class="border-t border-gray-100 pt-5">
-                <h2 class="text-sm font-bold text-gray-900 flex items-center gap-2 mb-3">
-                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span>In afwachting ({{ $ride->passengers->where('pivot.status', \App\Enums\PassengerStatus::PENDING->value)->count() }})</span>
-                </h2>
-
-                <div class="space-y-3">
-                    @forelse($ride->passengers->where('pivot.status', \App\Enums\PassengerStatus::PENDING->value) as $passenger)
-
-                    @php
-                    // Haal de boodschappenlijst op via de pivot ID
-                    $shoppingList = \App\Models\ShoppingList::where('ride_passenger_id', $passenger->pivot->id)->first();
-                    @endphp
-
-
-
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-amber-50/50 border border-amber-200/60 rounded-xl gap-3">
-                        <div class="max-w-[50%]">
-                            <span class="font-bold text-sm text-gray-900 block">{{ $passenger->user->name }}</span>
-
-                            @if($isDriver)
-                            <!-- Afleveradres (Alleen tonen als het een boodschappenrit is -->
-                            @if(!empty($passenger->pivot->delivery_address))
-                            <span class="text-xs text-gray-600 block mt-0.5">
-                                <strong>Afleveradres:</strong> {{ $passenger->pivot->delivery_address }}
-                            </span>
-                            @endif
-
-                            <!-- Opmerking voor de bestuurder -->
-                            @if($shoppingList && !empty($shoppingList->note))
-                            <span class="text-xs text-gray-600 block mt-0.5">
-                                <strong>Opmerking:</strong> {{ $shoppingList->note }}
-                            </span>
-                            @endif
-                            @endif
-                        </div>
-
-                        <!-- Actieknoppen voor Bestuurder -->
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-                            <!-- Bekijk boodschappenlijst button -->
-                            @if($shoppingList)
-                            <a href="{{ route('ritten.shopping-lists.show', ['ride' => $ride->id, 'shoppingList' => $shoppingList->id]) }}"
-                                class="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-xs font-bold transition shadow-xs flex items-center justify-center gap-1">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path>
-                                </svg>
-                                Lijst bekijken
-                            </a>
-                            @endif
-
-                            <!-- Rij voor Afkeuren en Goedkeuren -->
-                            <div class="flex items-center gap-2">
-                                <!-- Afkeuren -->
-                                <form action="{{ route('rides.passengers.update', [$ride->id, $passenger->id]) }}" method="POST" class="flex-1 sm:flex-initial">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="status" value="{{ \App\Enums\PassengerStatus::REJECTED->value }}">
-                                    <button type="submit" class="w-full sm:w-auto px-3 py-1.5 bg-white text-red-600 hover:bg-red-50 border border-red-200 rounded-lg text-xs font-bold transition shadow-xs text-center">
-                                        Afkeuren
-                                    </button>
-                                </form>
-
-                                <!-- Goedkeuren -->
-                                <form action="{{ route('rides.passengers.update', [$ride->id, $passenger->id]) }}" method="POST" class="flex-1 sm:flex-initial">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="status" value="{{ \App\Enums\PassengerStatus::APPROVED->value }}">
-                                    <button type="submit" class="w-full sm:w-auto px-3 py-1.5 bg-[#0d0e1c] text-white hover:bg-black rounded-lg text-xs font-bold transition shadow-xs text-center">
-                                        Goedkeuren
-                                    </button>
-                                </form>
-                            </div>
-                        </div> 
-                        
-                    </div>
-                    @empty
-                    <p class="text-xs text-gray-400 italic">Er zijn momenteel geen verzoeken in behandeling.</p>
-                    
+                {{-- MOBIELE KNOP: Boodschappenlijst bekijken --}}
+                @if($shoppingList && ($isDriver || $passenger->id === auth()->id()))
+                <div class="pt-1 block sm:hidden">
+                    <a href="{{ route('ritten.shopping-lists.show', ['ride' => $ride->id, 'shoppingList' => $shoppingList->id]) }}"
+                        class="inline-flex items-center gap-1 text-[11px] bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-medium px-2.5 py-1 rounded-lg transition-colors">
+                        <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path>
+                        </svg>
+                        Lijst bekijken
+                    </a>
                 </div>
+                @endif
+
+                {{-- 💳 Betaalverzoek sturen knop (alleen voor de bestuurder bij goedgekeurde passagier) --}}
+                @if($isDriver)
+                <div class="pt-1">
+                    <a href="{{ route('request.create', ['receiver_id' => $passenger->user->id]) }}" class="w-full bg-[#0d0e1c] text-white py-2 px-3 rounded-xl font-bold text-xs hover:bg-black transition-all shadow-sm text-center block">
+                        Betaalverzoek sturen
+                    </a>
+                </div>
+                @endif
+
             </div>
-            <div class="flex items-center gap-2">
-                                <a href="{{ route('request.create', ['receiver_id' => $passenger->user->id]) }}" class="w-full bg-[#0d0e1c] text-white py-2 px-3 rounded-xl font-bold text-xs hover:bg-black transition-all shadow-sm text-center">
-                                  Betaalverzoek sturen
-                                </a>
-                            </div>
+            @empty
+            <p class="text-xs text-gray-400 italic">Nog geen passagiers aangemeld.</p>
             @endforelse
-            
-            @endif
+        </div>
     </div>
+
+    <!-- Openstaande Verzoeken (Alleen zichtbaar voor de bestuurder) -->
+    @if($isDriver)
+    <div class="border-t border-gray-100 pt-5">
+        <h2 class="text-sm font-bold text-gray-900 flex items-center gap-2 mb-3">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>In afwachting ({{ $ride->passengers->where('pivot.status', \App\Enums\PassengerStatus::PENDING->value)->count() }})</span>
+        </h2>
+
+        <div class="space-y-3">
+            @forelse($ride->passengers->where('pivot.status', \App\Enums\PassengerStatus::PENDING->value) as $passenger)
+
+            @php
+            // Haal de boodschappenlijst op via de pivot ID
+            $shoppingList = \App\Models\ShoppingList::where('ride_passenger_id', $passenger->pivot->id)->first();
+            @endphp
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-amber-50/50 border border-amber-200/60 rounded-xl gap-3">
+                <div class="max-w-[50%]">
+                    <span class="font-bold text-sm text-gray-900 block">{{ $passenger->user->name }}</span>
+
+                    @if($isDriver)
+                    <!-- Afleveradres -->
+                    @if(!empty($passenger->pivot->delivery_address))
+                    <span class="text-xs text-gray-600 block mt-0.5">
+                        <strong>Afleveradres:</strong> {{ $passenger->pivot->delivery_address }}
+                    </span>
+                    @endif
+
+                    <!-- Opmerking voor de bestuurder -->
+                    @if($shoppingList && !empty($shoppingList->note))
+                    <span class="text-xs text-gray-600 block mt-0.5">
+                        <strong>Opmerking:</strong> {{ $shoppingList->note }}
+                    </span>
+                    @endif
+                    @endif
+                </div>
+
+                <!-- Actieknoppen voor Bestuurder -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                    <!-- Bekijk boodschappenlijst button -->
+                    @if($shoppingList)
+                    <a href="{{ route('ritten.shopping-lists.show', ['ride' => $ride->id, 'shoppingList' => $shoppingList->id]) }}"
+                        class="px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-xs font-bold transition shadow-xs flex items-center justify-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path>
+                        </svg>
+                        Lijst bekijken
+                    </a>
+                    @endif
+
+                    <!-- Rij voor Afkeuren en Goedkeuren -->
+                    <div class="flex items-center gap-2">
+                        <!-- Afkeuren -->
+                        <form action="{{ route('rides.passengers.update', [$ride->id, $passenger->id]) }}" method="POST" class="flex-1 sm:flex-initial">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="status" value="{{ \App\Enums\PassengerStatus::REJECTED->value }}">
+                            <button type="submit" class="w-full sm:w-auto px-3 py-1.5 bg-white text-red-600 hover:bg-red-50 border border-red-200 rounded-lg text-xs font-bold transition shadow-xs text-center">
+                                Afkeuren
+                            </button>
+                        </form>
+
+                        <!-- Goedkeuren -->
+                        <form action="{{ route('rides.passengers.update', [$ride->id, $passenger->id]) }}" method="POST" class="flex-1 sm:flex-initial">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="status" value="{{ \App\Enums\PassengerStatus::APPROVED->value }}">
+                            <button type="submit" class="w-full sm:w-auto px-3 py-1.5 bg-[#0d0e1c] text-white hover:bg-black rounded-lg text-xs font-bold transition shadow-xs text-center">
+                                Goedkeuren
+                            </button>
+                        </form>
+                    </div>
+                </div> 
+            </div>
+            @empty
+            <p class="text-xs text-gray-400 italic">Er zijn momenteel geen verzoeken in behandeling.</p>
+            @endforelse
+        </div>
+    </div>
+    @endif
+</div>
 
     <!-- JavaScript voor het inladen van de Google PlaceAutocompleteElement library -->
     <script>
