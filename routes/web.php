@@ -126,3 +126,11 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::post('tikkie/webhook', [PaymentRequestController::class, 'handleWebhook']);
+
+Route::get('/admin/dashboard', [AdminDashboardController::class, 'showDashboardWithSuggestions'])
+    ->middleware(['auth'])
+    ->name('admin.dashboard');
+
+Route::delete('/admin/suggestions/{id}', [AdminDashboardController::class, 'destroySuggestion'])
+    ->middleware(['auth']) // Pas aan op jouw admin middleware
+    ->name('admin.suggestions.destroy');

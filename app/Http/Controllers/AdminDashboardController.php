@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Membership;
+use App\Models\Suggestion;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 
 class AdminDashboardController extends Controller
@@ -87,5 +89,31 @@ class AdminDashboardController extends Controller
         $member = User::findOrFail($id);
 
         return view('admin.member.show', compact('member'));
+    }
+
+    public function showDashboardWithSuggestions(Request $request)
+    {
+        $accountrequest = Membership::with('user')->where('status', 'pending')->get();
+        $processedRequests = Membership::with('user')->where('status', '!=', 'pending')->latest()->take(2)->get();
+
+        // Start de query voor suggesties/klachten met de gekoppelde gebruiker
+        $suggestionsQuery = Suggestion::with('user');
+
+        // Check of er een filter is meegegeven via de URL (?type=klacht of ?type=suggestie)
+        if ($request->filled('type') && in_array($request->type, ['klacht', 'suggestie'])) {
+            $suggestionsQuery->where('type', $request->type);
+        }
+
+        $suggestions = $suggestionsQuery->latest()->get();
+
+        return view('admin.dashboard', compact('accountrequest', 'processedRequests', 'suggestions'));
+    }
+
+    public function destroySuggestion($id)
+    {
+        $suggestion = Suggestion::findOrFail($id);
+        $suggestion->delete();
+
+        return redirect()->back()->with('success', 'Suggestie/klacht succesvol afgehandeld.');
     }
 }
