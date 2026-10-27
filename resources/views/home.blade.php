@@ -5,6 +5,7 @@
     <h1 class="text-2xl font-bold text-red-600 font-serif">Welkom, {{ Auth::user()->name }}</h1>
 
 <div class="max-w-4xl mx-auto bg-white shadow-md rounded-lg overflow-x-auto mt-6">
+    <h2 class="text-lg font-semibold text-gray-800 px-6 py-4 border-b">Ontvangen betaalverzoeken</h2>
     <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
             <tr>
@@ -18,7 +19,7 @@
             @forelse($receivedRequests as $request)
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {{ $request->sender->name }}
+                        {{ $request->sender?->name ?? 'Undefined' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         € {{ number_format($request->amount, 2, ',', '.') }}

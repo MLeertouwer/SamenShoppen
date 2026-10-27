@@ -13,6 +13,8 @@ class PaymentRequest extends Model
         'amount',
         'status',
         'description',
+        'payment_request_url',
+        'tikkie_payment_request_id',
     ];
 
     public function sender(): BelongsTo

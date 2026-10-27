@@ -124,3 +124,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/payment-requests/create', [PaymentRequestController::class, 'create'])->name('request.create');
     Route::post('/payment-requests', [PaymentRequestController::class, 'store'])->name('request.store');
 });
+
+Route::post('tikkie/webhook', [PaymentRequestController::class, 'handleWebhook']);
