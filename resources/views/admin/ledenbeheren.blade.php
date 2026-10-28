@@ -12,10 +12,10 @@
                     <!-- 1. Gebruikersgegevens -->
                     <div class="flex-1 min-w-0 ms-2">
                         <p class="font-medium text-heading truncate">
-                            {{ $member->name }}
+                            {{ $member->user->name }}
                         </p>
                         <p class="text-sm text-body truncate">
-                            {{ $member->email }}
+                            {{ $member->user->email }}
                         </p>
                     </div>
 
