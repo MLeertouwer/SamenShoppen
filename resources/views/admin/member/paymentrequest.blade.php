@@ -8,7 +8,7 @@
             @csrf
 
             <div>
-                <label for="receiver_id" class="block text-sm font-medium text-gray-700 mb-1">Selecteer lid</label>
+                <label for="receiver_id" class="block text-sm font-medium text-gray-700 mb-1">Kies een passagier</label>
                 <select name="receiver_id" id="receiver_id" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
                     <option value="">Kies een passagier...</option>
                     @foreach($members as $member)
