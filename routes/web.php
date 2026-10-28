@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MemberHomeController;
 use App\Http\Controllers\MemberSuggestionsController;
 use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentRequestController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\RideController;
 use App\Http\Controllers\SetNewPasswordController;
@@ -38,16 +40,16 @@ Route::get('/login', function () {
 
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 
-Route::get('/dashboard', [AdminDashboardController::class, 'showApprovedUsers'])
+Route::get('/dashboard', [AdminDashboardController::class, 'index'])
     ->name('dashboard')
     ->middleware('role:beheerder');
 
-Route::get('/aanvragen', [AdminDashboardController::class, 'showRequests'])
+Route::get('/aanvragen', [AdminDashboardController::class, 'index'])
     ->name('aanvragen')
     ->middleware('role:beheerder');
 
 /**
- * Routes voor de rides.
+- Routes voor de rides.
  */
 Route::get('/ritten', [RideController::class, 'index'])->name('ritten.index')->middleware(['auth', EnsureHasApprovedMembership::class]);
 Route::get('/ritten/melden', [RideController::class, 'create'])->name('ritten.create')->middleware(['auth', EnsureHasApprovedMembership::class]);
@@ -66,7 +68,7 @@ Route::get('/ritten/{ride}/boodschappenlijst/{shoppingList}', [RideController::c
     ->name('ritten.shopping-lists.show');
 
 /**
- * END - Routes voor de rides.
+- END - Routes voor de rides.
  */
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
@@ -74,13 +76,7 @@ Route::post('/admin/gebruikers/{user}/goedkeuren', [AdminDashboardController::cl
 Route::post('/admin/gebruikers/{user}/afkeuren', [AdminDashboardController::class, 'rejectUser'])->name('user.reject');
 Route::get('/reset-password/{token}', [SetPasswordController::class, 'create'])->name('password.reset');
 Route::post('/reset-password', [SetPasswordController::class, 'store'])->name('password.update');
-Route::get('/home', function () {
-    if (! auth()->check()) {
-        return redirect()->route('welcome');
-    }
-
-    return view('home');
-})->name('home');
+Route::get('/home', [MemberHomeController::class, 'index'])->name('home');
 
 Route::get('/ledenbeheren', [AdminDashboardController::class, 'showMembers'])
     ->name('ledenbeheren')
@@ -123,3 +119,19 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/betalen/succes', [PaymentController::class, 'success'])->name('payment.success');
     Route::get('/betalen/annuleren', [PaymentController::class, 'cancel'])->name('payment.cancel');
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/payment-requests/create', [PaymentRequestController::class, 'create'])->name('request.create');
+    Route::post('/payment-requests', [PaymentRequestController::class, 'store'])->name('request.store');
+});
+
+Route::post('tikkie/webhook', [PaymentRequestController::class, 'handleWebhook']);
+
+// 🚗 Één centrale route voor het admin dashboard
+Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('admin.dashboard');
+
+Route::delete('/admin/suggestions/{id}', [AdminDashboardController::class, 'destroySuggestion'])
+    ->middleware(['auth'])
+    ->name('admin.suggestions.destroy');
