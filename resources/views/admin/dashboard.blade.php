@@ -5,6 +5,50 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
 
+    <div class="w-full p-6 bg-neutral-primary-soft border border-default rounded-base shadow-xs mt-6">
+    <div class="flex flex-col sm:flex-row items-center justify-between mb-4 gap-4">
+        <h5 class="text-xl font-semibold leading-none text-heading">
+            Ritten Overzicht ({{ $rides->count() }})
+        </h5>
+        
+        <!-- 🎛️ Filter Knoppen voor Vandaag & Morgen -->
+        <div class="flex gap-2">
+            <a href="{{ route('admin.dashboard', ['ride_date' => 'today']) }}" class="px-3 py-1 text-sm rounded bg-gray-200 text-gray-700 hover:bg-gray-300 {{ request('ride_date', 'today') === 'today' ? 'font-bold bg-gray-300' : '' }}">
+                Vandaag
+            </a>
+            <a href="{{ route('admin.dashboard', ['ride_date' => 'tomorrow']) }}" class="px-3 py-1 text-sm rounded bg-gray-200 text-gray-700 hover:bg-gray-300 {{ request('ride_date') === 'tomorrow' ? 'font-bold bg-gray-300' : '' }}">
+                Morgen
+            </a>
+        </div>
+    </div>
+
+    <div class="flow-root">
+        <ul role="list" class="divide-y divide-default">
+            @forelse ($rides as $ride)
+                <li class="py-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium text-heading">
+                                Bestuurder: {{ $ride->driver?->user?->name ?? 'Onbekend' }}
+                            </p>
+                            <p class="text-sm text-body">
+                                Vertrektijd: {{ \Carbon\Carbon::parse($ride->departure_time)->format('H:i') }}
+                            </p>
+                        </div>
+                        <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                            Passagiers: {{ $ride->passengers->count() }}
+                        </span>
+                    </div>
+                </li>
+            @empty
+                <li class="py-4">
+                    <p class="text-sm text-body">Er zijn geen ritten gevonden voor deze dag.</p>
+                </li>
+            @endforelse
+        </ul>
+    </div>
+</div>
+
     <div class="w-full p-6 bg-neutral-primary-soft border border-default rounded-base shadow-xs">
         <div class="flex items-center justify-between mb-4">
             <h5 class="text-xl font-semibold leading-none text-heading">Laatste aanvragen</h5>

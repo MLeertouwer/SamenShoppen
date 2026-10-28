@@ -3,20 +3,34 @@
 namespace App\Http\Controllers;
 
 use App\Models\Membership;
+use App\Models\Ride;
 use App\Models\Suggestion;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 
 class AdminDashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $accountrequest = Membership::with('user')
-            ->where('status', 'pending')
+
+        $accountrequest = Membership::with('user')->where('status', 'pending')->get();
+        $processedRequests = Membership::with('user')->where('status', '!=', 'pending')->latest()->take(2)->get();
+
+        $suggestionsQuery = Suggestion::with('user');
+        if ($request->filled('type') && in_array($request->type, ['klacht', 'suggestie'])) {
+            $suggestionsQuery->where('type', $request->type);
+        }
+        $suggestions = $suggestionsQuery->latest()->get();
+
+        $rideDateFilter = $request->get('ride_date', 'today');
+        $targetDate = $rideDateFilter === 'tomorrow' ? Carbon::tomorrow() : Carbon::today();
+        $rides = Ride::with(['driver', 'passengers'])
+            ->whereDate('departure_time', $targetDate)
             ->get();
 
-        return view('admin.dashboard', compact('accountrequest'));
+        return view('admin.dashboard', compact('accountrequest', 'processedRequests', 'suggestions', 'rides', 'rideDateFilter'));
     }
 
     public function showRequests()
@@ -115,5 +129,18 @@ class AdminDashboardController extends Controller
         $suggestion->delete();
 
         return redirect()->back()->with('success', 'Suggestie/klacht succesvol afgehandeld.');
+    }
+
+    public function showRides(Request $request)
+    {
+
+        $rideDateFilter = $request->get('ride_date', 'today');
+        $targetDate = $rideDateFilter === 'tomorrow' ? Carbon::tomorrow() : Carbon::today();
+
+        $rides = Ride::with(['driver', 'passengers'])
+            ->whereDate('departure_time', $targetDate)
+            ->get();
+
+        return view('admin.dashboard', compact('rides', 'rideDateFilter'));
     }
 }

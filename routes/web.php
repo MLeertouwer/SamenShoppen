@@ -40,16 +40,16 @@ Route::get('/login', function () {
 
 Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 
-Route::get('/dashboard', [AdminDashboardController::class, 'showApprovedUsers'])
+Route::get('/dashboard', [AdminDashboardController::class, 'index'])
     ->name('dashboard')
     ->middleware('role:beheerder');
 
-Route::get('/aanvragen', [AdminDashboardController::class, 'showRequests'])
+Route::get('/aanvragen', [AdminDashboardController::class, 'index'])
     ->name('aanvragen')
     ->middleware('role:beheerder');
 
 /**
- * Routes voor de rides.
+- Routes voor de rides.
  */
 Route::get('/ritten', [RideController::class, 'index'])->name('ritten.index')->middleware(['auth', EnsureHasApprovedMembership::class]);
 Route::get('/ritten/melden', [RideController::class, 'create'])->name('ritten.create')->middleware(['auth', EnsureHasApprovedMembership::class]);
@@ -68,7 +68,7 @@ Route::get('/ritten/{ride}/boodschappenlijst/{shoppingList}', [RideController::c
     ->name('ritten.shopping-lists.show');
 
 /**
- * END - Routes voor de rides.
+- END - Routes voor de rides.
  */
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
@@ -127,10 +127,11 @@ Route::middleware(['auth'])->group(function () {
 
 Route::post('tikkie/webhook', [PaymentRequestController::class, 'handleWebhook']);
 
-Route::get('/admin/dashboard', [AdminDashboardController::class, 'showDashboardWithSuggestions'])
+// 🚗 Één centrale route voor het admin dashboard
+Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
     ->middleware(['auth'])
     ->name('admin.dashboard');
 
 Route::delete('/admin/suggestions/{id}', [AdminDashboardController::class, 'destroySuggestion'])
-    ->middleware(['auth']) // Pas aan op jouw admin middleware
+    ->middleware(['auth'])
     ->name('admin.suggestions.destroy');
