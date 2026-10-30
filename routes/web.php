@@ -44,7 +44,7 @@ Route::get('/dashboard', [AdminDashboardController::class, 'index'])
     ->name('dashboard')
     ->middleware('role:beheerder');
 
-Route::get('/aanvragen', [AdminDashboardController::class, 'index'])
+Route::get('/aanvragen', [AdminDashboardController::class, 'showRequests'])
     ->name('aanvragen')
     ->middleware('role:beheerder');
 
